@@ -35,3 +35,12 @@ bootJar {
 	archiveFileName = "user_ms.jar"
 	archiveClassifier.set(null)
 }
+
+sonar {
+	properties {
+		property "sonar.projectKey", "mtech-31-quemistry_user_ms"
+		property "sonar.organization", "mtech-31-quemistry"
+		property "sonar.host.url", "https://sonarcloud.io"
+	}
+}
+
