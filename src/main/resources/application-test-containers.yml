@@ -9,3 +9,6 @@ spring:
 
   flyway:
     enabled: false
+  data:
+    jdbc:
+      dialect: postgresql

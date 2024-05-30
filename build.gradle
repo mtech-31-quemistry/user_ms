@@ -34,12 +34,13 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'org.flywaydb:flyway-database-postgresql'
 	runtimeOnly "org.springframework.boot:spring-boot-starter-actuator"
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.testcontainers:postgresql'
 	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
+	testImplementation "org.junit.jupiter:junit-jupiter"
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

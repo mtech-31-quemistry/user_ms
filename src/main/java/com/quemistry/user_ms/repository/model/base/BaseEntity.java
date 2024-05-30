@@ -1,26 +1,40 @@
 package com.quemistry.user_ms.repository.model.base;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 
+@MappedSuperclass
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BaseEntity {
 
     @Column(nullable = false, name = "created_on")
-    private Timestamp createdOn;
+    private OffsetDateTime createdOn;
 
     @Column(nullable = false, name = "created_by")
     private String createdBy;
 
     @Column(nullable = false, name = "modified_on")
-    private Timestamp modifiedOn;
+    private OffsetDateTime modifiedOn;
 
     @Column(nullable = false, name = "modified_by")
     private String modifiedBy;
+
+    public void setCreationAndModificationDetails(OffsetDateTime timestamp, String user) {
+        this.setCreatedOn(timestamp);
+        this.setCreatedBy(user);
+
+        this.setModifiedOn(timestamp);
+        this.setModifiedBy(user);
+    }
+
+
 }

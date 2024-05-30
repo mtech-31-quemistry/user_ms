@@ -1,5 +1,7 @@
 package com.quemistry.user_ms.controller;
 
+import com.quemistry.user_ms.model.base.ResponseDto;
+import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,16 +37,22 @@ public class StudentControllerTest {
         String expectedStatusMessage = "Successfully updated your profile";
         boolean expectedSuccessFlag = true;
 
-        when(studentService.updateStudentProfile(any())).thenReturn(true);
+        var mockResponse = new ResponseDto<StudentResponseDto>();
+        mockResponse.setStatusCode("00");
+        mockResponse.setStatusMessage("Successfully updated your profile");
+        mockResponse.setPayload(new StudentResponseDto(true));
+        when(studentService.updateStudentProfile(any())).thenReturn(mockResponse);
 
         mockMvc.perform(post("/v1/student/save")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("User-ID", "user-id")
                         .content("""
                                 {
-                                    "firstName": "first name",
-                                    "lastName": "last name",
-                                    "educationLevel": "Sec 2"
-                                }"""))
+                                     "firstName": "Test",
+                                     "lastName": "Test",
+                                     "email": "test@test.com",
+                                     "educationLevel": "Sec 2"
+                                 }"""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.statusCode").value(expectedStatusCode))

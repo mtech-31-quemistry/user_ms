@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -18,7 +20,8 @@ public class UserEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String account_id;
+    @Column(unique = true, nullable = false, name = "account_id")
+    private String accountId;
     private String email;
 
     @Column(name = "first_name")
@@ -29,4 +32,6 @@ public class UserEntity extends BaseEntity {
 
     @OneToOne(mappedBy = "userEntity")
     private StudentEntity studentEntity;
+
+
 }
