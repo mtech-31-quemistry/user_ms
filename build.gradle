@@ -26,14 +26,20 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.flywaydb:flyway-core'
 
 	compileOnly 'org.projectlombok:lombok'
 
 	annotationProcessor 'org.projectlombok:lombok'
 
 	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly "org.springframework.boot:spring-boot-starter-actuator"
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.testcontainers:postgresql'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -88,6 +94,7 @@ sonar {
 		property "sonar.projectKey", "mtech-31-quemistry_user_ms"
 		property "sonar.organization", "mtech-31-quemistry"
 		property "sonar.host.url", "https://sonarcloud.io"
+		property 'sonar.coverage.exclusions', "**/entity/**, **/model/**, **/Application*"
 	}
 }
 

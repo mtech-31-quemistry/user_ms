@@ -12,21 +12,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Table(name = "user", schema = "member")
-public class UserEntity extends BaseEntity {
+@Table(name = "student", schema = "member")
+public class StudentEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String account_id;
-    private String email;
+    @Column(name = "education_level")
+    private String educationLevel;
 
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "last_name")
-    private String lastName;
-
-    @OneToOne(mappedBy = "userEntity")
-    private StudentEntity studentEntity;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity userEntity;
 }

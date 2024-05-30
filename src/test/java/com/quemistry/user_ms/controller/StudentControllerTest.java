@@ -11,8 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -36,13 +35,16 @@ public class StudentControllerTest {
         String expectedStatusMessage = "Successfully updated your profile";
         boolean expectedSuccessFlag = true;
 
+        when(studentService.updateStudentProfile(any())).thenReturn(true);
+
         mockMvc.perform(post("/v1/student/save")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\n" +
-                                "    \"firstName\": \"first name\",\n" +
-                                "    \"lastName\": \"last name\",\n" +
-                                "    \"educationLevel\": \"Sec 2\"\n" +
-                                "}"))
+                        .content("""
+                                {
+                                    "firstName": "first name",
+                                    "lastName": "last name",
+                                    "educationLevel": "Sec 2"
+                                }"""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.statusCode").value(expectedStatusCode))
