@@ -48,32 +48,8 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
 
-  generate_jar:
-    needs: code_scan
-    name: Generate Jar File
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Check_and_build
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'gradle'
-      - run: ./gradlew bootJar
-
-      - name: Upload Project Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: spring-boot-artifact
-          path: |
-            build/libs/user_ms.jar
-            build/reports
-
   build_and_push_image:
-    needs: generate_jar
+    needs: code_scan
     name: Push Docker Image to ECR
     runs-on: ubuntu-latest
 
@@ -91,12 +67,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: spring-boot-artifact
-          path: build
 
       - name: Build and Push Image
         uses: docker/build-push-action@v5
@@ -148,23 +118,9 @@ jobs:
             exit 1
           fi
 
-      - name: Upload Code Coverage Artifacts
+      - name: Upload Code Analysis Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: code-coverage-artifact
+          name: project-artifact
           path: |
-            build/reports/jacoco/test/html/
-
-      - name: Upload Lint (Checkstyle) Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-artifact
-          path: |
-            build/reports/checkstyle/
-
-      - name: Upload SonarCloud Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: sast-artifact
-          path: |
-            build/sonar/report-task.txt
+            build/reports/

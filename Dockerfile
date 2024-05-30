@@ -16,8 +16,12 @@ ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH "${JAVA_HOME}/bin:${PATH}"
 COPY --from=jre-build /javaruntime $JAVA_HOME
 
+FROM gradle:8.7-jdk21 AS build
+COPY . .
 
-COPY build/libs/user_ms.jar user_ms.jar
-COPY src/main/resources/application.properties application.properties
+RUN gradle clean bootJar
+
+RUN mv build/libs/user_ms.jar user_ms.jar
+RUN mv src/main/resources/application.yml application.yml
 EXPOSE 8080
 CMD ["java", "-jar", "user_ms.jar"]

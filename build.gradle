@@ -20,6 +20,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	compileOnly 'org.projectlombok:lombok'
+
 	runtimeOnly 'org.postgresql:postgresql'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -29,12 +31,25 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
 }
 
 bootJar {
 	archiveFileName = "user_ms.jar"
 	archiveClassifier.set(null)
 }
+
+
+tasks.register('installLocalGitHook', Copy) {
+	from new File(rootProject.rootDir, 'scripts/pre-commit')
+	into { new File(rootProject.rootDir, '.git/hooks') }
+	fileMode 0775
+}
+
+tasks.named('build') {
+	finalizedBy('installLocalGitHook')
+}
+
 
 sonar {
 	properties {
