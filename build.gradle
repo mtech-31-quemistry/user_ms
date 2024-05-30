@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'jacoco'
 	id 'org.springframework.boot' version '3.3.0'
 	id 'io.spring.dependency-management' version '1.1.5'
 	id "org.sonarqube" version '4.4.1.3373'
@@ -12,6 +13,12 @@ java {
 	sourceCompatibility = '21'
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -22,6 +29,8 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok'
 
+	annotationProcessor 'org.projectlombok:lombok'
+
 	runtimeOnly 'org.postgresql:postgresql'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -31,7 +40,30 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
 
+jacocoTestReport {
+	dependsOn test
+
+	reports {
+		xml.required = true
+	}
+
+	afterEvaluate {
+		excludedClassFilesForReport(classDirectories)
+	}
+}
+
+private excludedClassFilesForReport(classDirectories) {
+	classDirectories.setFrom(files(classDirectories.files.collect {
+		fileTree(dir: it, exclude: [
+				'**/entity/*.class',
+				'**/model/**/*.class',
+				'**/model/*.class',
+				'**/Application.class'
+		])
+	}))
 }
 
 bootJar {
