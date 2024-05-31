@@ -1,20 +1,22 @@
 package com.quemistry.user_ms.service;
 
-
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.base.ResponseDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.StudentRepository;
 import com.quemistry.user_ms.repository.UserRepository;
-import org.junit.Test;
+
+import com.quemistry.user_ms.repository.model.StudentEntity;
+import com.quemistry.user_ms.repository.model.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +30,6 @@ public class StudentServiceImplTest {
 
     @InjectMocks
     private StudentServiceImpl studentService;
-
 
     @BeforeEach
     void setUp() {
@@ -54,6 +55,28 @@ public class StudentServiceImplTest {
 
     @Test
     public void givenStudent_whenUpdateStudentProfile_thenReturnSuccess() {
+        var inputStudentProfile = new StudentDto(
+                "first",
+                "second",
+                "test@test.com",
+                "user-id",
+                "Sec2");
 
+        var studentEntity = new StudentEntity(2L, "P1", null);
+
+        var userEntity = new UserEntity(
+                1L,
+                "user-id",
+                "test@test.com",
+                "first",
+                "second", studentEntity);
+
+
+        when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.of(userEntity));
+        when(studentRepository.findStudentEntityByUserEntityId(any())).thenReturn(studentEntity);
+
+        ResponseDto<StudentResponseDto> responseDto = this.studentService.updateStudentProfile(inputStudentProfile);
+
+        assertTrue(responseDto.getPayload().isSuccess());
     }
 }
