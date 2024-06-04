@@ -9,6 +9,7 @@ import java.util.List;
 public class ResponseDto<T> {
     private String statusCode;
     private String statusMessage;
+    private String serviceName;
     private List<ErrorDto> errors = new ArrayList<>();
     private T payload;
 }

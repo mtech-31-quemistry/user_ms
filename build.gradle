@@ -39,6 +39,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.flywaydb:flyway-core'
 
 	compileOnly 'org.projectlombok:lombok'
@@ -81,7 +82,9 @@ private excludedClassFilesForReport(classDirectories) {
 				'**/entity/*.class',
 				'**/model/**/*.class',
 				'**/model/*.class',
-				'**/Application.class'
+				'**/Application.class',
+				'**/constant/**/*.class',
+				'**/constant/*.class'
 		])
 	}))
 }
@@ -108,7 +111,7 @@ sonar {
 		property "sonar.projectKey", "mtech-31-quemistry_user_ms"
 		property "sonar.organization", "mtech-31-quemistry"
 		property "sonar.host.url", "https://sonarcloud.io"
-		property 'sonar.coverage.exclusions', "**/entity/**, **/model/**, **/Application*"
+		property 'sonar.coverage.exclusions', "**/entity/**, **/model/**, **/Application*, **/constant/**"
 	}
 }
 

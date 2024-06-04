@@ -1,5 +1,6 @@
 package com.quemistry.user_ms.controller;
 
+import com.quemistry.user_ms.controller.base.BaseController;
 import com.quemistry.user_ms.model.base.ErrorDto;
 import com.quemistry.user_ms.model.base.ResponseDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
@@ -29,7 +30,9 @@ public class StudentControllerTest {
 
     @BeforeEach
     void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new StudentController(studentService))
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(new StudentController(studentService))
+                .setControllerAdvice(new BaseController())
                 .build();
     }
 
@@ -90,6 +93,31 @@ public class StudentControllerTest {
         verify(studentService, times(0)).updateStudentProfile(any());
     }
 
+    @DisplayName("Should return status 400 when validation fails in body")
+    @Test
+    void givenStudents_whenSaveStudentProfileWithAnyInvalidBodyProperty_thenStatus400() throws Exception {
+
+        var mockResponse = new ResponseDto<StudentResponseDto>();
+        mockResponse.setStatusCode("00");
+        mockResponse.setStatusMessage("Successfully updated your profile");
+        mockResponse.setPayload(new StudentResponseDto(true));
+        when(studentService.updateStudentProfile(any())).thenReturn(mockResponse);
+
+        mockMvc.perform(post("/v1/student/save")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("User-ID", "")
+                        .content("""
+                                {
+                                     "firstName": "",
+                                     "lastName": "Test",
+                                     "email": "test@test.com",
+                                     "educationLevel": "Sec 2"
+                                 }"""))
+                .andExpect(status().isBadRequest());
+
+        verify(studentService, times(0)).updateStudentProfile(any());
+    }
+
     @DisplayName("Should return status 400 when request is empty in body")
     @Test
     void givenStudents_whenSaveStudentProfileWithoutBody_thenStatus400() throws Exception {
@@ -102,7 +130,8 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/save")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", "1234"))
+                        .header("User-ID", "1234")
+                        .content(new byte[0]))
                 .andExpect(status().isBadRequest());
 
         verify(studentService, times(0)).updateStudentProfile(any());
@@ -221,7 +250,7 @@ public class StudentControllerTest {
         mockResponse.setStatusCode("02");
         mockResponse.setStatusMessage("Error validation your object");
 
-        mockResponse.getErrors().add(new ErrorDto("ERR01", "Cannot process your object", "saveOrUpdateStudentProfile"));
+        mockResponse.getErrors().add(new ErrorDto("ERR01", "Cannot process your object"));
         mockResponse.setPayload(new StudentResponseDto(true));
         when(studentService.updateStudentProfile(any())).thenReturn(mockResponse);
 
