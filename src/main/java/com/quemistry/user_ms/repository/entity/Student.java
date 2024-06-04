@@ -1,6 +1,6 @@
-package com.quemistry.user_ms.repository.model;
+package com.quemistry.user_ms.repository.entity;
 
-import com.quemistry.user_ms.repository.model.base.BaseEntity;
+import com.quemistry.user_ms.repository.entity.base.Base;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "student", schema = "member")
-public class StudentEntity extends BaseEntity {
+public class Student extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,5 +23,5 @@ public class StudentEntity extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity userEntity;
+    private User userEntity;
 }

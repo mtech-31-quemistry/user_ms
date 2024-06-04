@@ -1,20 +1,18 @@
-package com.quemistry.user_ms.repository.model.base;
+package com.quemistry.user_ms.repository.entity.base;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 
 @MappedSuperclass
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseEntity {
+public class Base {
 
     @Column(nullable = false, name = "created_on")
     private OffsetDateTime createdOn;

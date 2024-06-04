@@ -6,8 +6,8 @@ import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.StudentRepository;
 import com.quemistry.user_ms.repository.UserRepository;
 
-import com.quemistry.user_ms.repository.model.StudentEntity;
-import com.quemistry.user_ms.repository.model.UserEntity;
+import com.quemistry.user_ms.repository.entity.Student;
+import com.quemistry.user_ms.repository.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -62,9 +62,9 @@ public class StudentServiceImplTest {
                 "user-id",
                 "Sec2");
 
-        var studentEntity = new StudentEntity(2L, "P1", null);
+        var studentEntity = new Student(2L, "P1", null);
 
-        var userEntity = new UserEntity(
+        var userEntity = new User(
                 1L,
                 "user-id",
                 "test@test.com",

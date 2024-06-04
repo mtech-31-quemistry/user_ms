@@ -1,13 +1,11 @@
-package com.quemistry.user_ms.repository.model;
+package com.quemistry.user_ms.repository.entity;
 
-import com.quemistry.user_ms.repository.model.base.BaseEntity;
+import com.quemistry.user_ms.repository.entity.base.Base;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.time.OffsetDateTime;
 
 @Data
 @Entity
@@ -15,7 +13,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "user", schema = "member")
-public class UserEntity extends BaseEntity {
+public class User extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,7 +29,12 @@ public class UserEntity extends BaseEntity {
     private String lastName;
 
     @OneToOne(mappedBy = "userEntity")
-    private StudentEntity studentEntity;
+    private Student studentEntity;
 
+    @PrePersist
+    @PreUpdate
+    @PostLoad
+    public void decryptSensitiveColumns() {
 
+    }
 }

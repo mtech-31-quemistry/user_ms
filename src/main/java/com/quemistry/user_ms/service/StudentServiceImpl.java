@@ -6,12 +6,11 @@ import com.quemistry.user_ms.model.base.ResponseDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.StudentRepository;
 import com.quemistry.user_ms.repository.UserRepository;
-import com.quemistry.user_ms.repository.model.StudentEntity;
-import com.quemistry.user_ms.repository.model.UserEntity;
+import com.quemistry.user_ms.repository.entity.Student;
+import com.quemistry.user_ms.repository.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 
 @Slf4j
@@ -32,6 +31,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public ResponseDto<StudentResponseDto> updateStudentProfile(StudentDto student) {
         log.info("update student profile started");
+        log.info("update student profile -> user id: {}", student.getUserId());
 
         var responseDto = new ResponseDto<StudentResponseDto>();
         var studentResponseDto = new StudentResponseDto();
@@ -39,8 +39,8 @@ public class StudentServiceImpl implements StudentService {
         var userOptional = this.userRepository.findUserEntityByAccountId(student.getUserId());
 
         if (userOptional.isPresent()) {
-            UserEntity existingUser = userOptional.get();
-            StudentEntity existingStudent = this.studentRepository.findStudentEntityByUserEntityId(existingUser.getId());
+            User existingUser = userOptional.get();
+            Student existingStudent = this.studentRepository.findStudentEntityByUserEntityId(existingUser.getId());
 
             existingUser.setFirstName(student.getFirstName());
             existingUser.setLastName(student.getLastName());
@@ -64,7 +64,7 @@ public class StudentServiceImpl implements StudentService {
             return responseDto;
         }
 
-        var userEntity = new UserEntity();
+        var userEntity = new User();
         var now = OffsetDateTime.now();
         userEntity.setAccountId(student.getUserId());
         userEntity.setFirstName(student.getFirstName());
@@ -73,7 +73,7 @@ public class StudentServiceImpl implements StudentService {
         userEntity.setCreationAndModificationDetails(now, student.getUserId());
         this.userRepository.save(userEntity);
 
-        var studentEntity = new StudentEntity();
+        var studentEntity = new Student();
         studentEntity.setUserEntity(userEntity);
         studentEntity.setEducationLevel(student.getEducationLevel());
         studentEntity.setCreationAndModificationDetails(now, student.getUserId());

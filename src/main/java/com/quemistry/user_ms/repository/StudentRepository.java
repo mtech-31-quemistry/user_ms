@@ -1,12 +1,9 @@
 package com.quemistry.user_ms.repository;
 
-import com.quemistry.user_ms.repository.model.StudentEntity;
+import com.quemistry.user_ms.repository.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-import java.util.UUID;
+public interface StudentRepository extends JpaRepository<Student, Long> {
 
-public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
-
-    StudentEntity findStudentEntityByUserEntityId(Long userEntityId);
+    Student findStudentEntityByUserEntityId(Long userEntityId);
 }
