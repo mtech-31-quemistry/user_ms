@@ -7,8 +7,6 @@ spring:
     url: ${DATABASE_URL}
     username: ${DATABASE_LOGIN}
     password: ${DATABASE_SECRET}
-    cipher:
-      key: ${DATABASE_CIPHER_KEY}
 
   flyway:
     enabled: true
@@ -32,3 +30,8 @@ management:
   endpoint:
     health:
       show-details: never
+
+quemistry:
+  user:
+    cipher:
+      key: ${DATABASE_CIPHER_KEY}

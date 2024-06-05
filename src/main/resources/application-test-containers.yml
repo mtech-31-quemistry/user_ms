@@ -12,3 +12,8 @@ spring:
   data:
     jdbc:
       dialect: postgresql
+
+quemistry:
+  user:
+    cipher:
+      key: test-encryption-key

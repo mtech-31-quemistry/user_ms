@@ -1,5 +1,6 @@
 package com.quemistry.user_ms.repository.entity;
 
+import com.quemistry.user_ms.repository.converter.AttributeEncryptor;
 import com.quemistry.user_ms.repository.entity.base.Base;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,12 +21,16 @@ public class User extends Base {
 
     @Column(unique = true, nullable = false, name = "account_id")
     private String accountId;
+
+    @Convert(converter = AttributeEncryptor.class)
     private String email;
 
     @Column(name = "first_name")
+    @Convert(converter = AttributeEncryptor.class)
     private String firstName;
 
     @Column(name = "last_name")
+    @Convert(converter = AttributeEncryptor.class)
     private String lastName;
 
     @OneToOne(mappedBy = "userEntity")

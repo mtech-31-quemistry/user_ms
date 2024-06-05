@@ -82,6 +82,7 @@ private excludedClassFilesForReport(classDirectories) {
 				'**/entity/*.class',
 				'**/model/**/*.class',
 				'**/model/*.class',
+				'**/entity/**/*.class',
 				'**/Application.class',
 				'**/constant/**/*.class',
 				'**/constant/*.class'
@@ -111,7 +112,7 @@ sonar {
 		property "sonar.projectKey", "mtech-31-quemistry_user_ms"
 		property "sonar.organization", "mtech-31-quemistry"
 		property "sonar.host.url", "https://sonarcloud.io"
-		property 'sonar.coverage.exclusions', "**/entity/**, **/model/**, **/Application*, **/constant/**"
+		property 'sonar.coverage.exclusions', "**/entity/**, **/model/**, **/Application*, **/constant/**, **/entity/**/**"
 	}
 }
 
