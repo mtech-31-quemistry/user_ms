@@ -44,6 +44,7 @@ public class StudentServiceImpl implements StudentService {
 
             existingUser.setFirstName(student.getFirstName());
             existingUser.setLastName(student.getLastName());
+            existingUser.setEmail(student.getEmail());
             existingUser.setModifiedBy(student.getUserId());
             existingUser.setModifiedOn(OffsetDateTime.now());
             this.userRepository.save(existingUser);

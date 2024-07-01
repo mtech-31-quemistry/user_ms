@@ -17,3 +17,4 @@ quemistry:
   user:
     cipher:
       key: test-encryption-key
+      size: 1

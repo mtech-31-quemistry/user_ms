@@ -19,8 +19,6 @@ spring:
 
 management:
   endpoints:
-    health:
-      enabled: true
     web:
       exposure:
         include: health
@@ -30,11 +28,13 @@ management:
   endpoint:
     health:
       show-details: never
+      enabled: true
 
 quemistry:
   user:
     cipher:
       key: ${DATABASE_CIPHER_KEY}
+      size: ${DATABASE_CIPHER_KEY_SIZE}
 
 server:
   port: 80
