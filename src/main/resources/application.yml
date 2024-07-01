@@ -35,3 +35,6 @@ quemistry:
   user:
     cipher:
       key: ${DATABASE_CIPHER_KEY}
+
+server:
+  port: 80

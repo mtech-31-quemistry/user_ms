@@ -29,9 +29,10 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - DATABASE_LOGIN=${DATABASE_LOGIN}
       - DATABASE_SECRET=${DATABASE_SECRET}
+      - DATABASE_CIPHER_KEY=${DATABASE_CIPHER_KEY}
 
     ports:
-      - "8080:8080"
+      - "80:80"
 
 volumes:
   postgres_data:
