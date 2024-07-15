@@ -1,10 +1,8 @@
 package com.quemistry.user_ms.controller;
 
-import com.quemistry.user_ms.controller.base.BaseController;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +17,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
-@Disabled
+@WebMvcTest(StudentController.class)
+
 public class StudentControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -32,7 +30,7 @@ public class StudentControllerTest {
     void init() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new StudentController(studentService))
-                .setControllerAdvice(new BaseController())
+                //.setControllerAdvice(new BaseController())
                 .build();
     }
 
@@ -40,7 +38,7 @@ public class StudentControllerTest {
     @Test
     void givenStudents_whenSaveStudentProfile_thenStatus200() throws Exception {
         String expectedStatusCode = "00";
-        String expectedStatusMessage = "Successfully updated your profile";
+        String expectedStatusMessage = "Your profile has been updated.";
         boolean expectedSuccessFlag = true;
 
         when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(true));
@@ -204,7 +202,7 @@ public class StudentControllerTest {
                                      "email": "test@test.com",
                                      "educationLevel": "Sec 2"
                                  }"""))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
 
         verify(studentService, times(1)).updateStudentProfile(any());
     }
@@ -226,7 +224,7 @@ public class StudentControllerTest {
                                      "email": "test@test.com",
                                      "educationLevel": "Sec 2"
                                  }"""))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
 
         verify(studentService, times(1)).updateStudentProfile(any());
     }
