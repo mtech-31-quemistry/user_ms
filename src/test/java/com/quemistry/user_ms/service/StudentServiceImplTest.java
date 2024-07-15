@@ -1,11 +1,9 @@
 package com.quemistry.user_ms.service;
 
 import com.quemistry.user_ms.model.StudentDto;
-import com.quemistry.user_ms.model.base.ResponseDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.StudentRepository;
 import com.quemistry.user_ms.repository.UserRepository;
-
 import com.quemistry.user_ms.repository.entity.Student;
 import com.quemistry.user_ms.repository.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,9 +46,9 @@ public class StudentServiceImplTest {
 
         when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.empty());
 
-        ResponseDto<StudentResponseDto> responseDto = this.studentService.updateStudentProfile(inputStudentProfile);
+        StudentResponseDto responseDto = this.studentService.updateStudentProfile(inputStudentProfile);
 
-        assertTrue(responseDto.getPayload().isSuccess());
+        assertTrue(responseDto.isSuccess());
     }
 
     @Test
@@ -75,8 +73,8 @@ public class StudentServiceImplTest {
         when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.of(userEntity));
         when(studentRepository.findStudentEntityByUserEntityId(any())).thenReturn(studentEntity);
 
-        ResponseDto<StudentResponseDto> responseDto = this.studentService.updateStudentProfile(inputStudentProfile);
+        StudentResponseDto responseDto = this.studentService.updateStudentProfile(inputStudentProfile);
 
-        assertTrue(responseDto.getPayload().isSuccess());
+        assertTrue(responseDto.isSuccess());
     }
 }

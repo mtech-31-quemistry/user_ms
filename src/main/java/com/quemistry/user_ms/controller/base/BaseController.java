@@ -18,9 +18,9 @@ import java.util.ArrayList;
 @Slf4j
 public class BaseController {
 
-    public ResponseEntity<?> prepareException(String controllerName,
-                                              String functionName,
-                                              Exception ex) {
+    public ResponseEntity<ResponseDto> prepareException(String controllerName,
+                                                        String functionName,
+                                                        Exception ex) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
@@ -31,40 +31,53 @@ public class BaseController {
                 functionName,
                 errorTrace);
 
+        var errors = new ArrayList<ErrorDto>();
+        errors.add(new ErrorDto(UserConstant.STATUS_CODE_GENERIC_ERROR, "Error processing the request"));
+
+        var responseDto = new ResponseDto(
+                UserConstant.STATUS_CODE_GENERIC_ERROR,
+                "Service unavailable, please try again later.",
+                functionName,
+                errors,
+                null
+        );
+
         if (ex instanceof IllegalArgumentException)
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            return ResponseEntity.badRequest().body(responseDto);
 
         if (ex instanceof RuntimeException)
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(responseDto);
 
-        return ResponseEntity.internalServerError().body(ex.getMessage());
+        return ResponseEntity.internalServerError().body(responseDto);
     }
 
-    public ResponseEntity<?> prepareResponse(String controllerName,
-                                                       String functionName,
-                                                       ResponseDto<?> responseDto) {
-        if (responseDto == null)
+    public ResponseDto prepareResponse(String controllerName,
+                                       String functionName,
+                                       String statusMessage,
+                                       Object response) {
+        if (response == null)
             throw new RuntimeException("responseDto is null");
+
+        var responseDto = new ResponseDto(
+                UserConstant.STATUS_CODE_SUCCESS,
+                statusMessage,
+                functionName,
+                new ArrayList<ErrorDto>(),
+                response
+        );
+        responseDto.setPayload(response);
 
         log.info("controllerName:{}, functionName:{}: Status Message:{}",
                 controllerName,
                 functionName,
-                responseDto.getStatusMessage());
+                statusMessage);
 
-        responseDto.setServiceName(functionName);
-
-        if (responseDto.getStatusCode().equals(UserConstant.STATUS_CODE_VALIDATION_ERROR))
-            return ResponseEntity.badRequest().body(responseDto);
-
-        if (!responseDto.getErrors().isEmpty())
-            return ResponseEntity.badRequest().body(responseDto);
-
-        return ResponseEntity.ok(responseDto);
+        return responseDto;
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseDto<?> handleValidationExceptions(
+    public ResponseDto handleValidationExceptions(
             MethodArgumentNotValidException ex) {
 
         var errors = new ArrayList<ErrorDto>();
@@ -74,7 +87,7 @@ public class BaseController {
             errors.add(new ErrorDto(fieldName, errorMessage));
         });
 
-        ResponseDto<?> responseDto = new ResponseDto<>();
+        ResponseDto responseDto = new ResponseDto();
         responseDto.getErrors().addAll(errors);
         responseDto.setStatusCode(UserConstant.STATUS_CODE_VALIDATION_ERROR);
         responseDto.setStatusMessage("Fail to validate the request");

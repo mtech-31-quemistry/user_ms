@@ -1,8 +1,6 @@
 package com.quemistry.user_ms.service;
 
-import com.quemistry.user_ms.constant.UserConstant;
 import com.quemistry.user_ms.model.StudentDto;
-import com.quemistry.user_ms.model.base.ResponseDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.StudentRepository;
 import com.quemistry.user_ms.repository.UserRepository;
@@ -29,11 +27,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseDto<StudentResponseDto> updateStudentProfile(StudentDto student) {
+    public StudentResponseDto updateStudentProfile(StudentDto student) {
         log.info("update student profile started");
         log.info("update student profile -> user id: {}", student.getUserId());
 
-        var responseDto = new ResponseDto<StudentResponseDto>();
         var studentResponseDto = new StudentResponseDto();
 
         var userOptional = this.userRepository.findUserEntityByAccountId(student.getUserId());
@@ -55,14 +52,9 @@ public class StudentServiceImpl implements StudentService {
             this.studentRepository.save(existingStudent);
 
             studentResponseDto.setSuccess(true);
-
-            responseDto.setStatusCode(UserConstant.STATUS_CODE_SUCCESS);
-            responseDto.setStatusMessage("Your profile has been updated");
-            responseDto.setPayload(studentResponseDto);
-
             log.info("update student profile finished");
 
-            return responseDto;
+            return studentResponseDto;
         }
 
         var userEntity = new User();
@@ -81,11 +73,11 @@ public class StudentServiceImpl implements StudentService {
         this.studentRepository.save(studentEntity);
 
         studentResponseDto.setSuccess(true);
-        responseDto.setStatusCode(UserConstant.STATUS_CODE_SUCCESS);
-        responseDto.setStatusMessage("Your profile has been created");
-        responseDto.setPayload(studentResponseDto);
+//        responseDto.setStatusCode(UserConstant.STATUS_CODE_SUCCESS);
+//        responseDto.setStatusMessage("Your profile has been created");
+//        responseDto.setPayload(studentResponseDto);
 
         log.info("create student profile finished");
-        return responseDto;
+        return studentResponseDto;
     }
 }

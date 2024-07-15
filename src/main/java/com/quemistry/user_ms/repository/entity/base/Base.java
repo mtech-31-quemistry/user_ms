@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
@@ -24,6 +25,7 @@ public class Base {
     private OffsetDateTime modifiedOn;
 
     @Column(nullable = false, name = "modified_by")
+    @Getter
     private String modifiedBy;
 
     public void setCreationAndModificationDetails(OffsetDateTime timestamp, String user) {
@@ -31,6 +33,11 @@ public class Base {
         this.setCreatedBy(user);
 
         this.setModifiedOn(timestamp);
+        this.setModifiedBy(user);
+    }
+
+    public void setModified(String user) {
+        this.setModifiedOn(OffsetDateTime.now());
         this.setModifiedBy(user);
     }
 

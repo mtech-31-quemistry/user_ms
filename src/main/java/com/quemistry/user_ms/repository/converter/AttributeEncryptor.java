@@ -5,23 +5,23 @@ import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Base64;
+
+import static com.quemistry.user_ms.constant.EncryptionConstant.*;
 
 @Slf4j
 @Converter
 public class AttributeEncryptor implements AttributeConverter<String, String> {
 
-    private final String ENCRYPT_ALGO = "AES/GCM/NoPadding";
-    private final int TAG_LENGTH_BIT = 128;
 
-    private final Charset UTF_8 = StandardCharsets.UTF_8;
     private final Cipher cipher;
     private final SecretKey secretKey;
     private final int ivKeySize;

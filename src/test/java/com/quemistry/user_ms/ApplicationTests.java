@@ -1,5 +1,6 @@
 package com.quemistry.user_ms;
 
+import com.quemistry.user_ms.controller.ClassController;
 import com.quemistry.user_ms.controller.StudentController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test-containers")
 class ApplicationTests {
 
-	@Autowired
-	private StudentController studentController;
+    @Autowired
+    private StudentController studentController;
 
-	@Test
-	void contextLoads() {
-		assertThat(studentController).isNotNull();
-	}
+    @Autowired
+    private ClassController classController;
+
+    @Test
+    void contextLoads() {
+        assertThat(studentController).isNotNull();
+        assertThat(classController).isNotNull();
+    }
 
 }
