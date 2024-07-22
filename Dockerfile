@@ -6,6 +6,7 @@ RUN gradle bootJar
 
 RUN mv build/libs/user_ms.jar /usr/share/user_ms.jar
 RUN mv src/main/resources/application.yml /usr/share/application.yml
+RUN mv src/main/resources/email /usr/share/email
 
 
 # Custom Java runtime using jlink in a multi-stage container build
@@ -26,6 +27,7 @@ COPY --from=jre-build /javaruntime $JAVA_HOME
 
 COPY --from=project-build /usr/share/user_ms.jar .
 COPY --from=project-build /usr/share/application.yml .
+COPY --from=project-build /usr/share/email .
 
 EXPOSE 80
 CMD ["java", "-jar", "user_ms.jar"]

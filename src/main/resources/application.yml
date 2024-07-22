@@ -16,6 +16,20 @@ spring:
     schemas: ${DATABASE_LOGIN}
     user: ${DATABASE_LOGIN}
     password: ${DATABASE_SECRET}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    password: ${SMTP_PASSWORD}
+    username: ${SMTP_USER_NAME}
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
 management:
   endpoints:

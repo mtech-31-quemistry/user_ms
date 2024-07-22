@@ -1,9 +1,10 @@
-package com.quemistry.user_ms.service;
+package com.quemistry.user_ms.service.impl;
 
 import com.quemistry.user_ms.model.ClassDto;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.repository.ClassRepository;
 import com.quemistry.user_ms.repository.entity.Class;
+import com.quemistry.user_ms.service.ClassService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class ClassServiceImpl implements ClassService {
 
         var classEntity = new Class();
         var now = OffsetDateTime.now();
-        classEntity.setName(input.getName());
+        classEntity.setCode(input.getCode());
         classEntity.setDescription(input.getDescription());
         classEntity.setEducationLevel(input.getEducationLevel());
         classEntity.setSubject(input.getSubject());
@@ -54,7 +55,7 @@ public class ClassServiceImpl implements ClassService {
 
         var classResponseDto = new ClassResponseDto();
         var existingClass = classOptional.get();
-        existingClass.setName(input.getName());
+        existingClass.setCode(input.getCode());
         existingClass.setDescription(input.getDescription());
         existingClass.setEducationLevel(input.getEducationLevel());
         existingClass.setSubject(input.getSubject());

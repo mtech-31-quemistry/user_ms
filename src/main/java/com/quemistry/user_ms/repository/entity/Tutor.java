@@ -12,17 +12,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Class extends Base {
+public class Tutor extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String code;
-
-    private String description;
-
-    private String subject;
-
     @Column(name = "education_level")
     private String educationLevel;
+
+    @Column(name = "tuition_centre")
+    private String tuitionCentre;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User userEntity;
 }

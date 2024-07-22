@@ -13,7 +13,7 @@ public class ClassDto {
     private Long id;
 
     @NotBlank
-    private String name;
+    private String code;
 
     private String educationLevel;
 

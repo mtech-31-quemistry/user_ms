@@ -26,6 +26,7 @@ public class StudentControllerTest {
     @MockBean
     private StudentService studentService;
 
+
     @BeforeEach
     void init() {
         mockMvc = MockMvcBuilders
@@ -43,7 +44,7 @@ public class StudentControllerTest {
 
         when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(true));
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", "user-id")
                         .content("""
@@ -68,7 +69,7 @@ public class StudentControllerTest {
 
         when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(true));
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", "")
                         .content("""
@@ -89,7 +90,7 @@ public class StudentControllerTest {
 
         when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(true));
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", "")
                         .content("""
@@ -110,7 +111,7 @@ public class StudentControllerTest {
 
         when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(false));
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", "1234")
                         .content(new byte[0]))
@@ -125,7 +126,7 @@ public class StudentControllerTest {
 
         when(studentService.updateStudentProfile(any())).thenThrow(RuntimeException.class);
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", 12314)
                         .content("""
@@ -149,7 +150,7 @@ public class StudentControllerTest {
         });
 
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", 12314)
                         .content("""
@@ -171,7 +172,7 @@ public class StudentControllerTest {
         when(studentService.updateStudentProfile(any())).thenReturn(null);
 
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", 12314)
                         .content("""
@@ -192,7 +193,7 @@ public class StudentControllerTest {
 
         when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(false));
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", 12314)
                         .content("""
@@ -214,7 +215,7 @@ public class StudentControllerTest {
         when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(false));
 
 
-        mockMvc.perform(post("/v1/student/save")
+        mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("User-ID", 12314)
                         .content("""

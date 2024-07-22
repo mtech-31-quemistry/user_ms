@@ -1,4 +1,19 @@
 spring:
+  mail:
+    host: mail.smtp.com
+    port: 99
+    password: pass
+    username: user
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
   datasource:
     url: jdbc:tc:postgresql:9.6.8:///test_database
     username: member

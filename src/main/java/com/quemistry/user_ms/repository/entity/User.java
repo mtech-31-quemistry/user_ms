@@ -36,10 +36,7 @@ public class User extends Base {
     @OneToOne(mappedBy = "userEntity")
     private Student studentEntity;
 
-    @PrePersist
-    @PreUpdate
-    @PostLoad
-    public void decryptSensitiveColumns() {
-
+    public String getFullName() {
+        return "%s %s".formatted(this.firstName, this.lastName);
     }
 }

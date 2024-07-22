@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS member.class
 (
     id              serial PRIMARY KEY,
-    name            varchar(50)           NOT NULL,
+    code            varchar(50)           NOT NULL unique,
     description     varchar(100)          NULL,
     subject         varchar(50)           NULL,
     education_level varchar(50)           NULL,

@@ -6,6 +6,7 @@ import com.quemistry.user_ms.repository.StudentRepository;
 import com.quemistry.user_ms.repository.UserRepository;
 import com.quemistry.user_ms.repository.entity.Student;
 import com.quemistry.user_ms.repository.entity.User;
+import com.quemistry.user_ms.service.impl.StudentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
