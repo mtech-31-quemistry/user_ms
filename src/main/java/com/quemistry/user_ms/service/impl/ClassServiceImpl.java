@@ -1,5 +1,6 @@
 package com.quemistry.user_ms.service.impl;
 
+import com.quemistry.user_ms.mapper.ClassesMapper;
 import com.quemistry.user_ms.model.ClassDto;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.repository.ClassRepository;
@@ -9,11 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
 public class ClassServiceImpl implements ClassService {
 
+    private static final ClassesMapper CLASSES_MAPPER = ClassesMapper.INSTANCE;
     private final ClassRepository classRepository;
 
     public ClassServiceImpl(ClassRepository classRepository) {
@@ -67,5 +70,10 @@ public class ClassServiceImpl implements ClassService {
         log.info("update class ended");
 
         return classResponseDto;
+    }
+
+    @Override
+    public List<ClassDto> getAllClasses() {
+        return CLASSES_MAPPER.classesToClassesDto(this.classRepository.findAll());
     }
 }

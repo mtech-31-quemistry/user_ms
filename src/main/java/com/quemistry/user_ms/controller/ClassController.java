@@ -19,6 +19,7 @@ import static com.quemistry.user_ms.constant.UserConstant.USER_ID_HEADER_KEY;
 public class ClassController extends BaseController {
 
     private final ClassService classService;
+    private final String controllerName = "ClassController";
 
     public ClassController(ClassService classService) {
         this.classService = classService;
@@ -30,7 +31,6 @@ public class ClassController extends BaseController {
             @Valid @RequestBody ClassDto input) {
 
         String functionName = "saveClass";
-        String controllerName = "ClassController";
 
         try {
             input.setUserId(userId);
@@ -54,7 +54,6 @@ public class ClassController extends BaseController {
             @Valid @RequestBody ClassDto input) {
 
         String functionName = "updateClass";
-        String controllerName = "ClassController";
 
         try {
             input.setUserId(userId);
@@ -69,6 +68,27 @@ public class ClassController extends BaseController {
                     functionName,
                     "The request has been completed.",
                     classResponseDto
+            );
+
+            return ResponseEntity.ok(responseDto);
+        } catch (Exception ex) {
+            return prepareException(controllerName, functionName, ex);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseDto> getAllClasses(
+            @RequestHeader(value = USER_ID_HEADER_KEY) String userId) {
+
+        String functionName = "getAllClasses";
+
+        try {
+
+            ResponseDto responseDto = prepareResponse(
+                    controllerName,
+                    functionName,
+                    "The request has been completed.",
+                    this.classService.getAllClasses()
             );
 
             return ResponseEntity.ok(responseDto);
