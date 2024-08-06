@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS member.tutor
+CREATE TABLE IF NOT EXISTS qms_user.tutor
 (
     id              serial PRIMARY KEY,
     user_id         serial                 NOT NULL,
