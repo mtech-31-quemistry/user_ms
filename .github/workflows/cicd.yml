@@ -150,7 +150,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: aws/task-definition.json
-          container-name: auth-ms
+          container-name: user-ms
           image: ${{ env.IMAGE_NAME }}
 
       - name: Deploy Amazon ECS task definition
