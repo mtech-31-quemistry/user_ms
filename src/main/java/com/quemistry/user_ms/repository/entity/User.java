@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Table(name = "user", schema = "member")
+@Table(name = "user", schema = "qms_user")
 public class User extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
