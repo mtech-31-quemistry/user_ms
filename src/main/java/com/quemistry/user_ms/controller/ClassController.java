@@ -11,12 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.quemistry.user_ms.constant.UserConstant.USER_ID_HEADER_KEY;
+
 @Slf4j
 @RestController
 @RequestMapping("/v1/class")
 public class ClassController extends BaseController {
 
     private final ClassService classService;
+    private final String controllerName = "ClassController";
 
     public ClassController(ClassService classService) {
         this.classService = classService;
@@ -24,11 +27,10 @@ public class ClassController extends BaseController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> saveClass(
-            @RequestHeader(value = "User-ID") String userId,
+            @RequestHeader(value = USER_ID_HEADER_KEY) String userId,
             @Valid @RequestBody ClassDto input) {
 
         String functionName = "saveClass";
-        String controllerName = "ClassController";
 
         try {
             input.setUserId(userId);
@@ -48,11 +50,10 @@ public class ClassController extends BaseController {
 
     @PutMapping
     public ResponseEntity<ResponseDto> updateClass(
-            @RequestHeader(value = "User-ID") String userId,
+            @RequestHeader(value = USER_ID_HEADER_KEY) String userId,
             @Valid @RequestBody ClassDto input) {
 
         String functionName = "updateClass";
-        String controllerName = "ClassController";
 
         try {
             input.setUserId(userId);
@@ -67,6 +68,27 @@ public class ClassController extends BaseController {
                     functionName,
                     "The request has been completed.",
                     classResponseDto
+            );
+
+            return ResponseEntity.ok(responseDto);
+        } catch (Exception ex) {
+            return prepareException(controllerName, functionName, ex);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseDto> getAllClasses(
+            @RequestHeader(value = USER_ID_HEADER_KEY) String userId) {
+
+        String functionName = "getAllClasses";
+
+        try {
+
+            ResponseDto responseDto = prepareResponse(
+                    controllerName,
+                    functionName,
+                    "The request has been completed.",
+                    this.classService.getAllClasses()
             );
 
             return ResponseEntity.ok(responseDto);

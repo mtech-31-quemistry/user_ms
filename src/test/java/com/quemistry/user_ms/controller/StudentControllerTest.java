@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.quemistry.user_ms.constant.UserConstant.USER_ID_HEADER_KEY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,7 +47,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", "user-id")
+                        .header(USER_ID_HEADER_KEY, USER_ID_HEADER_KEY)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -71,7 +72,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", "")
+                        .header(USER_ID_HEADER_KEY, "")
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -92,7 +93,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", "")
+                        .header(USER_ID_HEADER_KEY, "")
                         .content("""
                                 {
                                      "firstName": "",
@@ -113,7 +114,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", "1234")
+                        .header(USER_ID_HEADER_KEY, "1234")
                         .content(new byte[0]))
                 .andExpect(status().isBadRequest());
 
@@ -128,7 +129,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", 12314)
+                        .header(USER_ID_HEADER_KEY, 12314)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -152,7 +153,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", 12314)
+                        .header(USER_ID_HEADER_KEY, 12314)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -174,7 +175,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", 12314)
+                        .header(USER_ID_HEADER_KEY, 12314)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -195,7 +196,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", 12314)
+                        .header(USER_ID_HEADER_KEY, 12314)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -217,7 +218,7 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("User-ID", 12314)
+                        .header(USER_ID_HEADER_KEY, 12314)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -230,7 +231,31 @@ public class StudentControllerTest {
         verify(studentService, times(1)).updateStudentProfile(any());
     }
 
+    @DisplayName("Should return status 200 when send email invitation to student")
+    @Test
+    void givenStudents_whenSendInvitationToStudent_thenStatus200() throws Exception {
+        String expectedStatusCode = "00";
+        
+        when(studentService.sendInvitation(any(), anyString())).thenReturn(true);
+
+        mockMvc.perform(post("/v1/student/send-invitation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-User-ID", USER_ID_HEADER_KEY)
+                        .content("""
+                                {
+                                      "studentEmail": "test@gmail.com",
+                                      "studentFullName": "test",
+                                      "classCode": "test"
+                                  }"""))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.statusCode").value(expectedStatusCode));
+
+        verify(studentService, times(1)).sendInvitation(any(), anyString());
+    }
+
     private StudentResponseDto setStudentResponseMock(boolean flag) {
         return new StudentResponseDto(flag);
     }
+
 }

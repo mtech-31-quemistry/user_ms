@@ -1,7 +1,6 @@
 package com.quemistry.user_ms.service.impl;
 
 import com.quemistry.user_ms.model.EmailTemplateDto;
-import com.quemistry.user_ms.repository.TutorRepository;
 import com.quemistry.user_ms.service.NotificationService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -21,11 +20,9 @@ import static com.quemistry.user_ms.constant.EmailConstant.STUDENT_INVITATION_TE
 public class NotificationServiceImpl implements NotificationService {
 
     private final JavaMailSenderImpl mailSender;
-    private final TutorRepository tutorRepository;
 
-    public NotificationServiceImpl(JavaMailSenderImpl mailSender, TutorRepository tutorRepository) {
+    public NotificationServiceImpl(JavaMailSenderImpl mailSender) {
         this.mailSender = mailSender;
-        this.tutorRepository = tutorRepository;
     }
 
     /**

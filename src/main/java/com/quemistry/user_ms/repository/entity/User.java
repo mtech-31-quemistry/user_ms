@@ -36,6 +36,9 @@ public class User extends Base {
     @OneToOne(mappedBy = "userEntity")
     private Student studentEntity;
 
+    @OneToOne(mappedBy = "userEntity")
+    private Tutor tutorEntity;
+
     public String getFullName() {
         return "%s %s".formatted(this.firstName, this.lastName);
     }
