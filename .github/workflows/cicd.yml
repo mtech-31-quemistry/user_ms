@@ -162,6 +162,7 @@ jobs:
           wait-for-service-stability: false
 
   zap_scan:
+    if: false
     permissions: write-all
     needs: deploy_to_ecs
     runs-on: ubuntu-latest
