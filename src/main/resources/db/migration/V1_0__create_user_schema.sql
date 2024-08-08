@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS member.user
+CREATE TABLE IF NOT EXISTS qms_user.user
 (
     id serial PRIMARY KEY,
     account_id VARCHAR(255) UNIQUE,

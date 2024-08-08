@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Table(name = "student", schema = "member")
+@Table(name = "student", schema = "qms_user")
 public class Student extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

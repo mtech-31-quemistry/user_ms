@@ -16,7 +16,7 @@ spring:
 
   datasource:
     url: jdbc:tc:postgresql:9.6.8:///test_database
-    username: member
+    username: qms_user
     password: password
   jpa:
     hibernate:
