@@ -43,7 +43,9 @@ management:
     health:
       show-details: never
       enabled: true
-
+  health:
+    mail:
+      enabled: false
 quemistry:
   user:
     cipher:
