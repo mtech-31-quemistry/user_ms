@@ -40,7 +40,7 @@ public class ClassServiceImplTest {
     public void givenClass_AbleToUpdateClass() {
         var newClass = new ClassDto(1L, "test", "test", "test sub", "test", "tst");
 
-        var existingClass = new Class(1L, "test", "test", "test sub", "test");
+        var existingClass = new Class(1L, "test", "test", "test sub", "test", null);
 
         when(classRepository.findById(anyLong())).thenReturn(Optional.of(existingClass));
         Assertions.assertNotNull(this.classService.updateClass(newClass));

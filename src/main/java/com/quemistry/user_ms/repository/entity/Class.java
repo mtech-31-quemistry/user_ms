@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@Table(name = "class", schema = "qms_user")
 public class Class extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +26,7 @@ public class Class extends Base {
 
     @Column(name = "education_level")
     private String educationLevel;
+
+    @OneToOne(mappedBy = "classEntity")
+    private ClassInvitation invitation;
 }

@@ -30,6 +30,8 @@ spring:
 
 quemistry:
   user:
+    front-end:
+      url: hostname
     cipher:
       key: test-encryption-key
       size: 1

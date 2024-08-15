@@ -68,7 +68,7 @@ public class StudentController extends BaseController {
             ResponseDto responseDto = prepareResponse(
                     controllerName,
                     functionName,
-                    "Your profile has been updated.",
+                    "Successfully invited the student.",
                     this.studentService.sendInvitation(input, tutorId));
 
             return ResponseEntity.ok(responseDto);
