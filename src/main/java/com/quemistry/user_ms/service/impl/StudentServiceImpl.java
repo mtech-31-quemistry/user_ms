@@ -2,12 +2,15 @@ package com.quemistry.user_ms.service.impl;
 
 import com.quemistry.user_ms.constant.EmailConstant;
 import com.quemistry.user_ms.constant.UserConstant;
+import com.quemistry.user_ms.helper.StringHelper;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.*;
+import com.quemistry.user_ms.repository.converter.AttributeEncryptor;
 import com.quemistry.user_ms.repository.entity.ClassInvitation;
 import com.quemistry.user_ms.repository.entity.Student;
+import com.quemistry.user_ms.repository.entity.StudentClass;
 import com.quemistry.user_ms.repository.entity.User;
 import com.quemistry.user_ms.service.CryptoService;
 import com.quemistry.user_ms.service.NotificationService;
@@ -17,12 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 
 import static com.quemistry.user_ms.constant.EmailConstant.STUDENT_INVITATION_TEMPLATE;
+import static com.quemistry.user_ms.constant.UserConstant.STATUS_ACTIVE;
 
 @Slf4j
 @Service
@@ -47,6 +52,8 @@ public class StudentServiceImpl implements StudentService {
 
     private final String frontendURL;
 
+    private final AttributeEncryptor attributeEncryptor;
+
     public StudentServiceImpl(
             StudentRepository studentRepository,
             UserRepository userRepository,
@@ -56,7 +63,8 @@ public class StudentServiceImpl implements StudentService {
             StudentClassRepository studentClassRepository,
             ClassInvitationRepository classInvitationRepository,
             CryptoService cryptoService,
-            @Value("${quemistry.user.front-end.url}") String frontendURL) {
+            @Value("${quemistry.user.front-end.url}") String frontendURL,
+            AttributeEncryptor attributeEncryptor) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.tutorRepository = tutorRepository;
@@ -66,6 +74,7 @@ public class StudentServiceImpl implements StudentService {
         this.classInvitationRepository = classInvitationRepository;
         this.cryptoService = cryptoService;
         this.frontendURL = frontendURL;
+        this.attributeEncryptor = attributeEncryptor;
     }
 
     @Override
@@ -144,9 +153,19 @@ public class StudentServiceImpl implements StudentService {
             return false;
         }
 
+
         var tutor = tutorOptional.get();
         var classEntity = classOptional.get();
-        String encryptedClassCode = URLEncoder.encode(this.cryptoService.encrypt(classEntity.getCode()), StandardCharsets.UTF_8);
+
+        var classInvitation = new ClassInvitation();
+        classInvitation.setClassEntity(classEntity);
+        classInvitation.setUserEmail(input.studentEmail());
+        classInvitation.setStatus(EmailConstant.STATUS_SENT);
+        classInvitation.setUserType(UserConstant.USER_TYPE_STUDENT);
+        classInvitation.setCode(StringHelper.getRandomString(10));
+        this.classInvitationRepository.save(classInvitation);
+
+        String encryptedClassCode = URLEncoder.encode(this.cryptoService.encrypt(classInvitation.getCode()), StandardCharsets.UTF_8);
 
         var templateItems = new HashMap<String, String>();
         templateItems.put("%%student_name%%", input.studentFullName());
@@ -161,16 +180,34 @@ public class StudentServiceImpl implements StudentService {
                 templateItems);
 
 
-        var classInvitation = new ClassInvitation();
-        classInvitation.setClassEntity(classEntity);
-        classInvitation.setUserEmail(input.studentEmail());
-        classInvitation.setStatus(EmailConstant.STATUS_SENT);
-        classInvitation.setUserType(UserConstant.USER_TYPE_STUDENT);
-        this.classInvitationRepository.save(classInvitation);
-
-
         log.info("Send invitation ended");
 
         return canSend;
+    }
+
+    @Override
+    public boolean acceptInvitation(String studentEmail, String accountId, String code) throws Exception {
+
+        log.info("Accept invitation started");
+
+        String invitationCode = this.cryptoService.decrypt(URLDecoder.decode(code, StandardCharsets.UTF_8));
+
+        ClassInvitation invitedRecord = this.classInvitationRepository.findByCode(invitationCode).orElseThrow();
+
+        if (!invitedRecord.getUserEmail().equals(studentEmail)) {
+            log.error("invitation code (%s) and registered student email is not same".formatted(code));
+            return false;
+        }
+
+        var registeredStudent = this.studentRepository.findStudentEntityByUserEntityAccountId(accountId).orElseThrow();
+
+        var studentClassKey = new StudentClass.StudentClassKey();
+        var studentClass = new StudentClass(studentClassKey, registeredStudent, invitedRecord.getClassEntity(), STATUS_ACTIVE);
+        this.studentClassRepository.save(studentClass);
+
+
+        log.info("Accept invitation ended");
+
+        return true;
     }
 }

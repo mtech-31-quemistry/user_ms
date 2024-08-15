@@ -21,6 +21,9 @@ public class ClassInvitation {
     @Column(nullable = false, name = "user_email")
     private String userEmail;
 
+    @Column
+    private String code;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id", referencedColumnName = "id")
     private Class classEntity;

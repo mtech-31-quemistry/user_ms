@@ -4,7 +4,9 @@ import com.quemistry.user_ms.service.CryptoService;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
+@Service
 @Slf4j
 @Converter
 public class AttributeEncryptor implements AttributeConverter<String, String> {
