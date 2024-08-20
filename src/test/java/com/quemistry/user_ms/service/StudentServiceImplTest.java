@@ -90,9 +90,7 @@ public class StudentServiceImplTest {
                 "user-id",
                 "test@test.com",
                 "first",
-                "second",
-                studentEntity,
-                null);
+                "second");
 
 
         when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.of(userEntity));
@@ -118,9 +116,7 @@ public class StudentServiceImplTest {
                 "user-id",
                 "test@test.com",
                 "first",
-                "second",
-                null,
-                null
+                "second"
         );
 
         var tutorEntity = new Tutor(2L, "P1", "centre", userEntity);

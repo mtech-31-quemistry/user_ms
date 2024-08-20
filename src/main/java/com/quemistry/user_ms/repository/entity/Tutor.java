@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@NamedEntityGraph(
+        name = "tutor-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("userEntity")
+        }
+)
 public class Tutor extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +29,7 @@ public class Tutor extends Base {
     @Column(name = "tuition_centre")
     private String tuitionCentre;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User userEntity;
 }

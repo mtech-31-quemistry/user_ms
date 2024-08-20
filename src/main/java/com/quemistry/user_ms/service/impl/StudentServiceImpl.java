@@ -7,7 +7,6 @@ import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.*;
-import com.quemistry.user_ms.repository.converter.AttributeEncryptor;
 import com.quemistry.user_ms.repository.entity.ClassInvitation;
 import com.quemistry.user_ms.repository.entity.Student;
 import com.quemistry.user_ms.repository.entity.StudentClass;
@@ -52,8 +51,6 @@ public class StudentServiceImpl implements StudentService {
 
     private final String frontendURL;
 
-    private final AttributeEncryptor attributeEncryptor;
-
     public StudentServiceImpl(
             StudentRepository studentRepository,
             UserRepository userRepository,
@@ -63,8 +60,7 @@ public class StudentServiceImpl implements StudentService {
             StudentClassRepository studentClassRepository,
             ClassInvitationRepository classInvitationRepository,
             CryptoService cryptoService,
-            @Value("${quemistry.user.front-end.url}") String frontendURL,
-            AttributeEncryptor attributeEncryptor) {
+            @Value("${quemistry.user.front-end.url}") String frontendURL) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.tutorRepository = tutorRepository;
@@ -74,7 +70,6 @@ public class StudentServiceImpl implements StudentService {
         this.classInvitationRepository = classInvitationRepository;
         this.cryptoService = cryptoService;
         this.frontendURL = frontendURL;
-        this.attributeEncryptor = attributeEncryptor;
     }
 
     @Override
