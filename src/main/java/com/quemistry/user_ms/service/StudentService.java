@@ -9,5 +9,7 @@ public interface StudentService {
 
     StudentResponseDto updateStudentProfile(StudentDto student);
 
-    boolean sendInvitation(StudentInvitationDto input, String tutorAccountId);
+    boolean sendInvitation(StudentInvitationDto input, String tutorAccountId) throws Exception;
+
+    boolean acceptInvitation(String studentEmail, String accountId, String code) throws Exception;
 }

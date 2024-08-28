@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.quemistry.user_ms.constant.UserConstant.USER_ID_HEADER_KEY;
+import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -47,7 +47,7 @@ public class ClassControllerTest {
 
         mockMvc.perform(post("/v1/class")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-User-ID", USER_ID_HEADER_KEY)
+                        .header("X-User-ID", HEADER_KEY_USER_ID)
                         .content("""
                                 {
                                     "code": "C001",
@@ -73,7 +73,7 @@ public class ClassControllerTest {
 
         mockMvc.perform(put("/v1/class")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-User-ID", USER_ID_HEADER_KEY)
+                        .header("X-User-ID", HEADER_KEY_USER_ID)
                         .content("""
                                 {
                                      "id": 2,

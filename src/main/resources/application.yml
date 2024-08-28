@@ -48,6 +48,8 @@ management:
       enabled: false
 quemistry:
   user:
+    front-end:
+      url: ${HOST_NAME}
     cipher:
       key: ${DATABASE_CIPHER_KEY}
       size: ${DATABASE_CIPHER_KEY_SIZE}

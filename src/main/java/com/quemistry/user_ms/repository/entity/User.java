@@ -33,12 +33,6 @@ public class User extends Base {
     @Convert(converter = AttributeEncryptor.class)
     private String lastName;
 
-    @OneToOne(mappedBy = "userEntity")
-    private Student studentEntity;
-
-    @OneToOne(mappedBy = "userEntity")
-    private Tutor tutorEntity;
-
     public String getFullName() {
         return "%s %s".formatted(this.firstName, this.lastName);
     }

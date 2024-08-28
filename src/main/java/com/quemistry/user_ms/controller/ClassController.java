@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.quemistry.user_ms.constant.UserConstant.USER_ID_HEADER_KEY;
+import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
 
 @Slf4j
 @RestController
@@ -27,7 +27,7 @@ public class ClassController extends BaseController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> saveClass(
-            @RequestHeader(value = USER_ID_HEADER_KEY) String userId,
+            @RequestHeader(value = HEADER_KEY_USER_ID) String userId,
             @Valid @RequestBody ClassDto input) {
 
         String functionName = "saveClass";
@@ -50,7 +50,7 @@ public class ClassController extends BaseController {
 
     @PutMapping
     public ResponseEntity<ResponseDto> updateClass(
-            @RequestHeader(value = USER_ID_HEADER_KEY) String userId,
+            @RequestHeader(value = HEADER_KEY_USER_ID) String userId,
             @Valid @RequestBody ClassDto input) {
 
         String functionName = "updateClass";
@@ -78,7 +78,7 @@ public class ClassController extends BaseController {
 
     @GetMapping
     public ResponseEntity<ResponseDto> getAllClasses(
-            @RequestHeader(value = USER_ID_HEADER_KEY) String userId) {
+            @RequestHeader(value = HEADER_KEY_USER_ID) String userId) {
 
         String functionName = "getAllClasses";
 
