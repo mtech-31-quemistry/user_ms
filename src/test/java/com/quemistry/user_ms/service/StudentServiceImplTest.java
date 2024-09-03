@@ -102,36 +102,36 @@ class StudentServiceImplTest {
         assertTrue(responseDto.isSuccess());
     }
 
-//    @Test
-//    void givenStudent_whenSendInvitation_thenReturnSuccess() throws Exception {
-//        String tutorId = "test";
-//
-//        var inputStudentProfile = new StudentInvitationDto(
-//                "first@first.com",
-//                "full name",
-//                "c001");
-//
-//
-//        var userEntity = new User(
-//                1L,
-//                "user-id",
-//                "test@test.com",
-//                "first",
-//                "second"
-//        );
-//
-//        var tutorEntity = new Tutor(2L, "P1", "centre", userEntity, Collections.emptyList());
-//
-//        var classEntity = new Class(1L, "test", "test2", "test3", "test4", null, Collections.emptyList());
-//
-//
-//        when(tutorRepository.findTutorByUserEntityAccountId(anyString())).thenReturn(Optional.of(tutorEntity));
-//        when(classRepository.findByCode(any())).thenReturn(Optional.of(classEntity));
-//        when(notificationService.sendEmailNotification(anyString(), anyString(), any())).thenReturn(true);
-//        when(cryptoService.encrypt(anyString())).thenReturn("test");
-//
-//        boolean isSucceed = this.studentService.sendInvitation(inputStudentProfile, tutorId);
-//
-//        assertTrue(isSucceed);
-//    }
+    @Test
+    void givenStudent_whenSendInvitation_thenReturnSuccess() throws Exception {
+        String tutorId = "test";
+
+        var inputStudentProfile = new StudentInvitationDto(
+                "first@first.com",
+                "full name",
+                "c001");
+
+
+        var userEntity = new User(
+                1L,
+                "user-id",
+                "test@test.com",
+                "first",
+                "second"
+        );
+
+        var tutorEntity = new Tutor(2L, "P1", "centre", userEntity, Collections.emptyList());
+
+        var classEntity = new Class(1L, "test", "test2", "test3", "test4", null, Collections.emptyList());
+
+
+        when(tutorRepository.findTutorByUserEntityAccountId(anyString())).thenReturn(Optional.of(tutorEntity));
+        when(classRepository.findByCode(any())).thenReturn(Optional.of(classEntity));
+        when(notificationService.sendEmailNotification(anyString(), anyString(), any())).thenReturn(true);
+        when(cryptoService.encrypt(anyString())).thenReturn("test");
+
+        boolean isSucceed = this.studentService.sendInvitation(inputStudentProfile, tutorId);
+
+        assertTrue(isSucceed);
+    }
 }
