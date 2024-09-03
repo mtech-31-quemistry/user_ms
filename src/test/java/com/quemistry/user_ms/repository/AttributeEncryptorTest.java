@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.NoSuchPaddingException;
 import java.security.NoSuchAlgorithmException;
 
-public class AttributeEncryptorTest {
+class AttributeEncryptorTest {
 
     private AttributeEncryptor attributeEncryptor;
 
-    public void init() throws NoSuchPaddingException, NoSuchAlgorithmException {
+    void init() throws NoSuchPaddingException, NoSuchAlgorithmException {
         var cryptoService = new CryptoServiceImpl("770A8A65DA156D24EE2A093277530142", 20);
         attributeEncryptor = new AttributeEncryptor(cryptoService);
     }
 
     @Test
-    public void testEncrypt() throws NoSuchPaddingException, NoSuchAlgorithmException {
+    void testEncrypt() throws NoSuchPaddingException, NoSuchAlgorithmException {
         init();
         String encryptedText = attributeEncryptor.convertToDatabaseColumn("plaintext");
         System.out.println(encryptedText);
@@ -27,11 +27,11 @@ public class AttributeEncryptorTest {
     }
 
     @Test
-    public void testDecrypt() throws NoSuchPaddingException, NoSuchAlgorithmException {
+    void testDecrypt() throws NoSuchPaddingException, NoSuchAlgorithmException {
         init();
 
         String expectedDecryptedText = "plaintext";
-        String encryptedText = attributeEncryptor.convertToEntityAttribute("EZE0KNIfVk9Izr3FQPOA8Wn5cg69vy0i9frvpueLEXFlxRr93PL660KigDYz");
-        Assertions.assertEquals(expectedDecryptedText, encryptedText);
+        String decryptedText = attributeEncryptor.convertToEntityAttribute("EZE0KNIfVk9Izr3FQPOA8Wn5cg69vy0i9frvpueLEXFlxRr93PL660KigDYz");
+        Assertions.assertEquals(expectedDecryptedText, decryptedText);
     }
 }

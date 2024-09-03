@@ -1,6 +1,7 @@
 package com.quemistry.user_ms.controller;
 
 import com.quemistry.user_ms.controller.base.BaseController;
+import com.quemistry.user_ms.model.ClassDto;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.service.ClassService;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,13 +16,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ClassController.class)
-public class ClassControllerTest {
+class ClassControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -88,6 +94,37 @@ public class ClassControllerTest {
                 .andExpect(jsonPath("$.payload.success").value(expectedSuccessFlag));
 
         verify(classService, times(1)).updateClass(any());
+    }
+
+    @Test
+    void givenValidClassId_whenGetClassAndInvitations_thenReturnsResponseDto() throws Exception {
+        Long classId = 1L;
+        String userId = "user123";
+        when(classService.getClassWithInvitations(classId)).thenReturn(new ClassDto());
+
+        // Perform the GET request and verify the response
+        mockMvc.perform(get("/v1/class/{classId}", classId)
+                        .header("x-user-id", userId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.statusMessage").value("The request has been completed."));
+        // Add more expectations based on the properties of your ResponseDto
+    }
+
+
+    @Test
+    void givenInvalidClassId_whenGetClassAndInvitations_thenReturnsException() throws Exception {
+        Long classId = 1L;
+        String userId = "user123";
+
+        // Mock the service to throw an exception
+        when(classService.getClassWithInvitations(classId)).thenThrow(new RuntimeException("Class not found"));
+
+        // Perform the GET request and verify the exception handling
+        mockMvc.perform(get("/v1/class/{classId}", classId)
+                        .header("x-user-id", userId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
     }
 
     private ClassResponseDto setClassResponseDtoMock(boolean flag) {

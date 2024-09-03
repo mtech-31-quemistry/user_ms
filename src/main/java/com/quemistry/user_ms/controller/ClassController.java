@@ -96,4 +96,24 @@ public class ClassController extends BaseController {
             return prepareException(controllerName, functionName, ex);
         }
     }
+
+    @GetMapping("/{classId}")
+    public ResponseEntity<ResponseDto> getClassAndInvitations(
+            @RequestHeader(value = HEADER_KEY_USER_ID) String userId, @PathVariable Long classId) {
+        String functionName = "getClassAndInvitations";
+
+        try {
+
+            ResponseDto responseDto = prepareResponse(
+                    controllerName,
+                    functionName,
+                    "The request has been completed.",
+                    this.classService.getClassWithInvitations(classId)
+            );
+
+            return ResponseEntity.ok(responseDto);
+        } catch (Exception ex) {
+            return prepareException(controllerName, functionName, ex);
+        }
+    }
 }

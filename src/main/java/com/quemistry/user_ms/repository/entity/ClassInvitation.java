@@ -24,7 +24,7 @@ public class ClassInvitation {
     @Column
     private String code;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id", referencedColumnName = "id")
     private Class classEntity;
 
@@ -32,4 +32,16 @@ public class ClassInvitation {
     private int userType;
 
     private String status;
+
+    @Override
+    public String toString() {
+        return "ClassInvitation{" +
+                "id=" + id +
+                ", userEmail='" + userEmail + '\'' +
+                ", code='" + code + '\'' +
+                ", classEntity=" + classEntity.getId() +
+                ", userType=" + userType +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

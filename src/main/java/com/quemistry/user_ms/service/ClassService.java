@@ -12,4 +12,6 @@ public interface ClassService {
     ClassResponseDto updateClass(ClassDto input);
 
     List<ClassDto> getAllClasses();
+
+    ClassDto getClassWithInvitations(Long classId);
 }

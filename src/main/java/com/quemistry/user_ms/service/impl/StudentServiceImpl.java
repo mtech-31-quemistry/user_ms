@@ -6,7 +6,13 @@ import com.quemistry.user_ms.helper.StringHelper;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
-import com.quemistry.user_ms.repository.*;
+import com.quemistry.user_ms.repository.ClassInvitationRepository;
+import com.quemistry.user_ms.repository.ClassRepository;
+import com.quemistry.user_ms.repository.StudentClassRepository;
+import com.quemistry.user_ms.repository.StudentRepository;
+import com.quemistry.user_ms.repository.TutorRepository;
+import com.quemistry.user_ms.repository.UserRepository;
+import com.quemistry.user_ms.repository.entity.Class;
 import com.quemistry.user_ms.repository.entity.ClassInvitation;
 import com.quemistry.user_ms.repository.entity.Student;
 import com.quemistry.user_ms.repository.entity.StudentClass;
@@ -17,13 +23,16 @@ import com.quemistry.user_ms.service.StudentService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 
 import static com.quemistry.user_ms.constant.EmailConstant.STUDENT_INVITATION_TEMPLATE;
 import static com.quemistry.user_ms.constant.UserConstant.STATUS_ACTIVE;
@@ -136,21 +145,26 @@ public class StudentServiceImpl implements StudentService {
 
         var tutorOptional = this.tutorRepository.findTutorByUserEntityAccountId(tutorAccountId);
 
+        String message;
         if (tutorOptional.isEmpty()) {
+            message = "tutor id (%s) not found".formatted(tutorAccountId);
             log.error("tutor id (%s) not found".formatted(tutorAccountId));
-            return false;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,message );
+//            return false;
         }
-
-        var classOptional = this.classRepository.findAllByCode(input.classCode());
+        Optional<Class> classOptional = classRepository.findByCode(input.classCode());
 
         if (classOptional.isEmpty()) {
+            message = "class code (%s) not found".formatted(input.classCode());
             log.error("class code (%s) not found".formatted(input.classCode()));
-            return false;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,message );
+//            return false;
         }
 
 
         var tutor = tutorOptional.get();
         var classEntity = classOptional.get();
+
 
         var classInvitation = new ClassInvitation();
         classInvitation.setClassEntity(classEntity);

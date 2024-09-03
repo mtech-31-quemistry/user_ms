@@ -14,4 +14,6 @@ public interface ClassesMapper {
     ClassesMapper INSTANCE = Mappers.getMapper(ClassesMapper.class);
 
     List<ClassDto> classesToClassesDto(List<Class> classes);
+
+    ClassDto classToClassDto(Class clazz);
 }

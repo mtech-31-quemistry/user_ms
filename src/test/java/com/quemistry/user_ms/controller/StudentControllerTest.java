@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(StudentController.class)
 
-public class StudentControllerTest {
+class StudentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -137,7 +137,7 @@ public class StudentControllerTest {
                                      "email": "test@test.com",
                                      "educationLevel": "Sec 2"
                                  }"""))
-                .andExpect(status().isServiceUnavailable());
+                .andExpect(status().isInternalServerError());
 
         verify(studentService, times(1)).updateStudentProfile(any());
     }
@@ -183,7 +183,7 @@ public class StudentControllerTest {
                                      "email": "test@test.com",
                                      "educationLevel": "Sec 2"
                                  }"""))
-                .andExpect(status().isServiceUnavailable());
+                .andExpect(status().isInternalServerError());
 
         verify(studentService, times(1)).updateStudentProfile(any());
     }

@@ -36,7 +36,7 @@ public class BaseController {
 
         var responseDto = new ResponseDto(
                 UserConstant.STATUS_CODE_GENERIC_ERROR,
-                "Service unavailable, please try again later.",
+                "Something went wrong. Please contact support.",
                 functionName,
                 errors,
                 null
@@ -46,7 +46,7 @@ public class BaseController {
             return ResponseEntity.badRequest().body(responseDto);
 
         if (ex instanceof RuntimeException)
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(responseDto);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
 
         return ResponseEntity.internalServerError().body(responseDto);
     }
