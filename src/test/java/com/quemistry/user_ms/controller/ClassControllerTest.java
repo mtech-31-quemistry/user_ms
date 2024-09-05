@@ -100,7 +100,7 @@ class ClassControllerTest {
     void givenValidClassId_whenGetClassAndInvitations_thenReturnsResponseDto() throws Exception {
         Long classId = 1L;
         String userId = "user123";
-        when(classService.getClassWithInvitations(classId)).thenReturn(new ClassDto());
+        when(classService.getClassWithInvitations(classId, userId)).thenReturn(new ClassDto());
 
         // Perform the GET request and verify the response
         mockMvc.perform(get("/v1/class/{classId}", classId)
@@ -118,7 +118,7 @@ class ClassControllerTest {
         String userId = "user123";
 
         // Mock the service to throw an exception
-        when(classService.getClassWithInvitations(classId)).thenThrow(new RuntimeException("Class not found"));
+        when(classService.getClassWithInvitations(classId, userId)).thenThrow(new RuntimeException("Class not found"));
 
         // Perform the GET request and verify the exception handling
         mockMvc.perform(get("/v1/class/{classId}", classId)

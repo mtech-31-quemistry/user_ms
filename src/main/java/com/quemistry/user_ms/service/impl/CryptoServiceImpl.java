@@ -37,6 +37,9 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String encrypt(String plainText) throws Exception {
+        if (plainText == null){
+            return null;
+        }
         byte[] cipherTextWithIv;
         cipherTextWithIv = this.encryptWithPrefixIV(plainText.getBytes(UTF_8), this.getRandomNonce(this.ivKeySize));
 
@@ -49,6 +52,9 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String decrypt(String cipherTextWithIv) throws Exception {
+        if (cipherTextWithIv == null){
+            return null;
+        }
         byte[] cipherTextWithIvBytes = Base64.getDecoder().decode(cipherTextWithIv);
         return this.decryptWithPrefixIV(cipherTextWithIvBytes);
     }

@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
 
@@ -15,12 +17,14 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class Base {
 
+    @CreationTimestamp
     @Column(nullable = false, name = "created_on")
     private OffsetDateTime createdOn;
 
     @Column(nullable = false, name = "created_by")
     private String createdBy;
 
+    @UpdateTimestamp
     @Column(nullable = false, name = "modified_on")
     private OffsetDateTime modifiedOn;
 
@@ -28,11 +32,16 @@ public class Base {
     @Getter
     private String modifiedBy;
 
-    public void setCreationAndModificationDetails(OffsetDateTime timestamp, String user) {
+    public void setCreationAndModifiedDetails(OffsetDateTime timestamp, String user) {
         this.setCreatedOn(timestamp);
         this.setCreatedBy(user);
 
         this.setModifiedOn(timestamp);
+        this.setModifiedBy(user);
+    }
+
+    public void setCreatedAndModifiedUser(String user) {
+        this.setCreatedBy(user);
         this.setModifiedBy(user);
     }
 

@@ -4,6 +4,7 @@ import com.quemistry.user_ms.mapper.ClassInvitationMapper;
 import com.quemistry.user_ms.mapper.ClassesMapper;
 import com.quemistry.user_ms.model.ClassDto;
 import com.quemistry.user_ms.model.ClassInvitationDto;
+import com.quemistry.user_ms.model.SaveClassRequest;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.repository.ClassInvitationRepository;
 import com.quemistry.user_ms.repository.ClassRepository;
@@ -40,30 +41,36 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public ClassResponseDto saveClass(ClassDto classDto) {
+    public ClassResponseDto saveClass(SaveClassRequest request) {
         log.info("save class started");
-        log.info("save class -> user id: {}", classDto.getUserId());
+        log.info("save class -> user id: {}", request.getUserId());
         List<Tutor> tutors = new ArrayList<>();
-        classDto.getTutorAccountIds().forEach(
-                i -> {
-                    Optional<Tutor> tutorOptional = tutorRepository.findTutorByUserEntityAccountId(i);
-                    if (!tutorOptional.isPresent()){
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "tutor not found" );
-                    }
-                    tutors.add(tutorOptional.get());
+        Optional<Tutor> tutorOptional = tutorRepository.findTutorByUserEntityAccountId(request.getUserId());
 
-                }
-        );
+        if (!tutorOptional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "tutor not found" );
+        }
+        tutors.add(tutorOptional.get());
+//        request.getTutorAccountIds().forEach(
+//                i -> {
+//                    Optional<Tutor> tutorOptional = tutorRepository.findTutorByUserEntityAccountId(i);
+//                    if (!tutorOptional.isPresent()){
+//                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "tutor not found" );
+//                    }
+//                    tutors.add(tutorOptional.get());
+//
+//                }
+//        );
 
         var classResponseDto = new ClassResponseDto();
 
         var classEntity = new Class();
         var now = OffsetDateTime.now();
-        classEntity.setCode(classDto.getCode());
-        classEntity.setDescription(classDto.getDescription());
-        classEntity.setEducationLevel(classDto.getEducationLevel());
-        classEntity.setSubject(classDto.getSubject());
-        classEntity.setCreationAndModificationDetails(now, classDto.getUserId());
+        classEntity.setCode(request.getCode());
+        classEntity.setDescription(request.getDescription());
+        classEntity.setEducationLevel(request.getEducationLevel());
+        classEntity.setSubject(request.getSubject());
+        classEntity.setCreationAndModifiedDetails(now, request.getUserId());
         classEntity.setTutors(tutors);
         this.classRepository.save(classEntity);
 
@@ -106,8 +113,9 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public ClassDto getClassWithInvitations(Long classId) {
-        Optional<Class> classOptional = classRepository.findById(classId);
+    public ClassDto getClassWithInvitations(Long classId, String tutorAccountId) {
+//        Optional<Class> classOptional = classRepository.findById(classId);
+        Optional<Class> classOptional = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
         if (!classOptional.isPresent()){
             log.info("class not found for classId={}", classId);
             return null;

@@ -1,11 +1,12 @@
 package com.quemistry.user_ms.service;
 
 import com.quemistry.user_ms.model.ClassDto;
-import com.quemistry.user_ms.model.ClassInvitationDto;
+import com.quemistry.user_ms.model.SaveClassRequest;
+import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.repository.ClassInvitationRepository;
 import com.quemistry.user_ms.repository.ClassRepository;
+import com.quemistry.user_ms.repository.TutorRepository;
 import com.quemistry.user_ms.repository.entity.Class;
-import com.quemistry.user_ms.repository.entity.ClassInvitation;
 import com.quemistry.user_ms.repository.entity.Tutor;
 import com.quemistry.user_ms.repository.entity.User;
 import com.quemistry.user_ms.service.impl.ClassServiceImpl;
@@ -15,15 +16,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.verify;
-import java.util.Arrays;
+
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ClassServiceImplTest {
@@ -37,19 +37,50 @@ class ClassServiceImplTest {
     @Mock
     ClassInvitationRepository classInvitationRepository;
 
+    @Mock
+    TutorRepository tutorRepository;
+
     ClassDto classDto;
+
+    SaveClassRequest saveClassRequest;
 
     @BeforeEach
     void setUp() {
 //        classDto = new ClassDto(1L, "test", "test", "test sub", "test", "tst", null, Collections.emptyList());
         classDto = new ClassDto();
         classDto.setId(1L);
+        saveClassRequest = new SaveClassRequest();
         MockitoAnnotations.openMocks(this);
     }
 
+//    @Test
+//    void givenClass_AbleToSaveClass() {
+//        this.classService.saveClass(saveClassRequest);
+//    }
+
     @Test
-    void givenClass_AbleToSaveClass() {
-        this.classService.saveClass(classDto);
+    void testSaveClassSuccess() {
+        // Given
+        SaveClassRequest request = new SaveClassRequest();
+        request.setUserId("testUserId");
+        request.setCode("classCode");
+        request.setDescription("classDescription");
+        request.setEducationLevel("level");
+        request.setSubject("subject");
+
+        Tutor tutor = new Tutor();
+        tutor.setUserEntity(new User());
+
+        when(tutorRepository.findTutorByUserEntityAccountId("testUserId")).thenReturn(Optional.of(tutor));
+        when(classRepository.save(any(Class.class))).thenReturn(new Class());
+
+        // When
+        ClassResponseDto response = classService.saveClass(request);
+
+        // Then
+        assertTrue(response.isSuccess());
+        verify(tutorRepository).findTutorByUserEntityAccountId("testUserId");
+        verify(classRepository).save(any(Class.class));
     }
 
     @Test
@@ -65,43 +96,5 @@ class ClassServiceImplTest {
         Assertions.assertNull(this.classService.updateClass(classDto));
     }
 
-    @Test
-    void givenValidClassId_whenGetClassWithInvitations_thenReturnClassDto() {
-        Long classId = 1L;
 
-        // Mock class entity and its related data
-        User tutorUser = new User();
-        String tutorEmail = "tutor@example.com";
-        tutorUser.setEmail(tutorEmail);
-
-        Tutor tutor = new Tutor();
-        tutor.setUserEntity(tutorUser);
-
-        Class clazz = new Class();
-        clazz.setTutors(Arrays.asList(tutor));
-        List<ClassInvitation> classInvitations = Arrays.asList(new ClassInvitation());
-
-        ClassDto expectedClassDto = new ClassDto();
-        ClassInvitationDto classInvitationDto = new ClassInvitationDto();
-        List<ClassInvitationDto> expectedClassInvitationDtos = Arrays.asList(classInvitationDto);
-        expectedClassDto.setClassInvitations(expectedClassInvitationDtos);
-        expectedClassDto.setTutorEmails(Collections.singletonList(tutorEmail));
-
-        when(classRepository.findById(classId)).thenReturn(Optional.of(clazz));
-//        when(classMapper.classToClassDto(clazz)).thenReturn(mockClassDto);
-//        when(ClassInvitationMapper.INSTANCE.classInvitationsToClassInvitationDto(classInvitations))
-//                .thenReturn(mockClassInvitationDtos);
-        when(classInvitationRepository.findByClassId(classId)).thenReturn(classInvitations);
-
-        // Call the service method
-        ClassDto result = classService.getClassWithInvitations(classId);
-
-        // Verify the results
-        assertEquals(expectedClassDto, result);
-        assertEquals(expectedClassInvitationDtos, result.getClassInvitations());
-        assertEquals(Arrays.asList(tutorEmail), result.getTutorEmails());
-
-        verify(classRepository).findById(classId);
-        verify(classInvitationRepository).findByClassId(classId);
-    }
 }

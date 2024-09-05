@@ -1,6 +1,6 @@
 package com.quemistry.user_ms.service.impl;
 
-import com.quemistry.user_ms.constant.EmailConstant;
+import com.quemistry.user_ms.constant.ClassInvitationStatus;
 import com.quemistry.user_ms.constant.UserConstant;
 import com.quemistry.user_ms.helper.StringHelper;
 import com.quemistry.user_ms.model.StudentDto;
@@ -118,13 +118,13 @@ public class StudentServiceImpl implements StudentService {
         userEntity.setFirstName(student.getFirstName());
         userEntity.setLastName(student.getLastName());
         userEntity.setEmail(student.getEmail());
-        userEntity.setCreationAndModificationDetails(now, student.getUserId());
+        userEntity.setCreationAndModifiedDetails(now, student.getUserId());
         this.userRepository.save(userEntity);
 
         var studentEntity = new Student();
         studentEntity.setUserEntity(userEntity);
         studentEntity.setEducationLevel(student.getEducationLevel());
-        studentEntity.setCreationAndModificationDetails(now, student.getUserId());
+        studentEntity.setCreationAndModifiedDetails(now, student.getUserId());
         this.studentRepository.save(studentEntity);
 
         studentResponseDto.setSuccess(true);
@@ -169,7 +169,7 @@ public class StudentServiceImpl implements StudentService {
         var classInvitation = new ClassInvitation();
         classInvitation.setClassEntity(classEntity);
         classInvitation.setUserEmail(input.studentEmail());
-        classInvitation.setStatus(EmailConstant.STATUS_SENT);
+        classInvitation.setStatus(ClassInvitationStatus.INVITED);
         classInvitation.setUserType(UserConstant.USER_TYPE_STUDENT);
         classInvitation.setCode(StringHelper.getRandomString(10));
         this.classInvitationRepository.save(classInvitation);
@@ -198,25 +198,49 @@ public class StudentServiceImpl implements StudentService {
     public boolean acceptInvitation(String studentEmail, String accountId, String code) throws Exception {
 
         log.info("Accept invitation started");
+        log.debug("studentEmail: {}, accountId: {}, code: {}", studentEmail, accountId, code);
+        String decoded = URLDecoder.decode(code, StandardCharsets.UTF_8);
 
-        String invitationCode = this.cryptoService.decrypt(URLDecoder.decode(code, StandardCharsets.UTF_8));
+        log.debug("decoded: {}", studentEmail, accountId, code);
+        String invitationCode = this.cryptoService.decrypt(decoded);
+        log.debug("decrypted invitationCode: {} ", invitationCode);
+        ClassInvitation classInvitation = this.classInvitationRepository.findByCode(invitationCode).orElseThrow();
 
-        ClassInvitation invitedRecord = this.classInvitationRepository.findByCode(invitationCode).orElseThrow();
-
-        if (!invitedRecord.getUserEmail().equals(studentEmail)) {
-            log.error("invitation code (%s) and registered student email is not same".formatted(code));
-            return false;
+        if (!classInvitation.getUserEmail().equals(studentEmail)) {
+            String message = String.format("invited user (%s) and request user (%s) is not same",classInvitation.getUserEmail(), studentEmail);
+            log.error(message);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
         }
 
-        var registeredStudent = this.studentRepository.findStudentEntityByUserEntityAccountId(accountId).orElseThrow();
+        classInvitation.setStatus(ClassInvitationStatus.ACCEPTED);
+        classInvitationRepository.save(classInvitation);
 
+        Optional<User> userOptional = userRepository.findUserEntityByAccountId(accountId);
+        Student student;
+        if (userOptional.isEmpty()){
+            log.info("user with accountId={} not found", accountId);
+            student = new Student(accountId,studentEmail);
+            student = studentRepository.save(student);
+        } else {
+            Optional<Student> studentOptional = studentRepository.findStudentByUserEntityAccountId(accountId);
+            if (studentOptional.isEmpty()) {
+                String message = String.format("user with accountId=%s found, but not in student table", accountId);
+                log.info(message);
+//                throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+                student = new Student();
+                student.setUserEntity(userOptional.get());
+                student.setCreatedAndModifiedUser(accountId);
+                student = studentRepository.save(student);
+            } else {
+                log.info("student with accountId={} found", accountId);
+                student = studentOptional.get();
+            }
+        }
         var studentClassKey = new StudentClass.StudentClassKey();
-        var studentClass = new StudentClass(studentClassKey, registeredStudent, invitedRecord.getClassEntity(), STATUS_ACTIVE);
+        var studentClass = new StudentClass(studentClassKey, student, classInvitation.getClassEntity(), STATUS_ACTIVE);
         this.studentClassRepository.save(studentClass);
 
-
         log.info("Accept invitation ended");
-
         return true;
     }
 }

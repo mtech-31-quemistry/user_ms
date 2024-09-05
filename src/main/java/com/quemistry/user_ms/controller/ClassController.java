@@ -2,6 +2,7 @@ package com.quemistry.user_ms.controller;
 
 import com.quemistry.user_ms.controller.base.BaseController;
 import com.quemistry.user_ms.model.ClassDto;
+import com.quemistry.user_ms.model.SaveClassRequest;
 import com.quemistry.user_ms.model.base.ResponseDto;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.service.ClassService;
@@ -28,18 +29,18 @@ public class ClassController extends BaseController {
     @PostMapping
     public ResponseEntity<ResponseDto> saveClass(
             @RequestHeader(value = HEADER_KEY_USER_ID) String userId,
-            @Valid @RequestBody ClassDto input) {
+            @Valid @RequestBody SaveClassRequest request) {
 
         String functionName = "saveClass";
 
         try {
-            input.setUserId(userId);
+            request.setUserId(userId);
 
             ResponseDto responseDto = prepareResponse(
                     controllerName,
                     functionName,
                     "The request has been completed.",
-                    this.classService.saveClass(input)
+                    this.classService.saveClass(request)
             );
 
             return ResponseEntity.ok(responseDto);
@@ -99,7 +100,7 @@ public class ClassController extends BaseController {
 
     @GetMapping("/{classId}")
     public ResponseEntity<ResponseDto> getClassAndInvitations(
-            @RequestHeader(value = HEADER_KEY_USER_ID) String userId, @PathVariable Long classId) {
+            @RequestHeader(value = HEADER_KEY_USER_ID) String tutorId, @PathVariable Long classId) {
         String functionName = "getClassAndInvitations";
 
         try {
@@ -108,7 +109,7 @@ public class ClassController extends BaseController {
                     controllerName,
                     functionName,
                     "The request has been completed.",
-                    this.classService.getClassWithInvitations(classId)
+                    this.classService.getClassWithInvitations(classId, tutorId)
             );
 
             return ResponseEntity.ok(responseDto);

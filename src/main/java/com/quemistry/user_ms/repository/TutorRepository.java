@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface TutorRepository extends JpaRepository<Tutor, Long> {
 
     @EntityGraph(value = "tutor-entity-graph")
-    Optional<Tutor> findTutorByUserEntityAccountId(String userId);
+    Optional<Tutor> findTutorByUserEntityAccountId(String accountId);
 }

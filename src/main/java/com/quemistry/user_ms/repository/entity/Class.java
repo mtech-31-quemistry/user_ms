@@ -50,6 +50,14 @@ public class Class extends Base {
     )
     private List<Tutor> tutors = new ArrayList<>();
 
+//    @ManyToMany
+//    @JoinTable(
+//            name = "student_class",
+//            joinColumns = @JoinColumn(name = "class_id"),
+//            inverseJoinColumns = @JoinColumn(name = "student_id")
+//    )
+//    private List<Student> students = new ArrayList<>();
+
     @Override
     public String toString() {
         return "Class{" +
