@@ -1,10 +1,12 @@
 package com.quemistry.user_ms.service;
 
+import com.quemistry.user_ms.constant.ClassInvitationStatus;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.*;
 import com.quemistry.user_ms.repository.entity.Class;
+import com.quemistry.user_ms.repository.entity.ClassInvitation;
 import com.quemistry.user_ms.repository.entity.Student;
 import com.quemistry.user_ms.repository.entity.Tutor;
 import com.quemistry.user_ms.repository.entity.User;
@@ -14,13 +16,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -134,4 +142,50 @@ class StudentServiceImplTest {
 
         assertTrue(isSucceed);
     }
+
+    @Test
+    void acceptInvitation_validInvitation_success() throws Exception {
+        String studentEmail = "student@example.com";
+        String accountId = "accountId";
+        String code = "encodedCode";
+        String decryptedInvitationCode = "invitationCode";
+
+        ClassInvitation invitation = new ClassInvitation();
+        invitation.setUserEmail(studentEmail);
+        invitation.setStatus(ClassInvitationStatus.INVITED);
+        invitation.setClassEntity(new Class());
+
+        when(cryptoService.decrypt(anyString())).thenReturn(decryptedInvitationCode);
+        when(classInvitationRepository.findByCode(anyString())).thenReturn(Optional.of(invitation));
+        when(userRepository.findUserEntityByAccountId(anyString())).thenReturn(Optional.empty());
+        when(studentRepository.save(any(Student.class))).thenReturn(new Student());
+
+        boolean result = studentService.acceptInvitation(studentEmail, accountId, code);
+
+        assertTrue(result);
+        verify(classInvitationRepository).save(invitation);
+        assertEquals(ClassInvitationStatus.ACCEPTED, invitation.getStatus());
+    }
+
+    @Test
+    void acceptInvitation_mismatchedEmail_throwsForbidden() throws Exception {
+        String studentEmail = "student@example.com";
+        String accountId = "accountId";
+        String code = "encodedCode";
+        String decryptedInvitationCode = "invitationCode";
+
+        ClassInvitation invitation = new ClassInvitation();
+        invitation.setUserEmail("other@example.com");
+
+        when(cryptoService.decrypt(anyString())).thenReturn(decryptedInvitationCode);
+        when(classInvitationRepository.findByCode(anyString())).thenReturn(Optional.of(invitation));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                studentService.acceptInvitation(studentEmail, accountId, code)
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+        verify(classInvitationRepository, never()).save(any());
+    }
+
 }
