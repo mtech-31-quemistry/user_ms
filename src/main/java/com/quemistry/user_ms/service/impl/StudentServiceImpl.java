@@ -196,7 +196,13 @@ public class StudentServiceImpl implements StudentService {
         log.debug("decoded: {}", studentEmail, accountId, code);
         String invitationCode = this.cryptoService.decrypt(decoded);
         log.debug("decrypted invitationCode: {} ", invitationCode);
-        ClassInvitation classInvitation = this.classInvitationRepository.findByCode(invitationCode).orElseThrow();
+        Optional<ClassInvitation> classInvitationOptional = this.classInvitationRepository.findByCode(invitationCode);
+        if (classInvitationOptional.isEmpty()){
+            String message = String.format("Class Invitation with code=%s not found", invitationCode);
+            log.error(message);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+        }
+        ClassInvitation classInvitation = classInvitationOptional.get();
 
         if (!classInvitation.getUserEmail().equals(studentEmail)) {
             String message = String.format("invited user (%s) and request user (%s) is not same", classInvitation.getUserEmail(), studentEmail);

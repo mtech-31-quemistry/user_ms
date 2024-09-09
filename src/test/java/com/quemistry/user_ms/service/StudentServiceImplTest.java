@@ -8,6 +8,7 @@ import com.quemistry.user_ms.repository.*;
 import com.quemistry.user_ms.repository.entity.Class;
 import com.quemistry.user_ms.repository.entity.ClassInvitation;
 import com.quemistry.user_ms.repository.entity.Student;
+import com.quemistry.user_ms.repository.entity.StudentClass;
 import com.quemistry.user_ms.repository.entity.Tutor;
 import com.quemistry.user_ms.repository.entity.User;
 import com.quemistry.user_ms.service.impl.StudentServiceImpl;
@@ -216,6 +217,48 @@ class StudentServiceImplTest {
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
         verify(classInvitationRepository, never()).save(any());
+    }
+
+    @Test
+    void testAcceptInvitation_ClassInvitationNotFound() throws Exception {
+        String studentEmail = "student@example.com";
+        String accountId = "12345";
+        String encryptedCode = "encryptedCode";
+        String invitationCode = "validCode";
+
+        when(cryptoService.decrypt(anyString())).thenReturn(invitationCode);
+        when(classInvitationRepository.findByCode(invitationCode)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResponseStatusException.class, () -> {
+            studentService.acceptInvitation(studentEmail, accountId, encryptedCode);
+        });
+
+        verify(classInvitationRepository, never()).save(any(ClassInvitation.class));
+    }
+
+    @Test
+    void testAcceptInvitation_UserNotFound() throws Exception {
+        String studentEmail = "student@example.com";
+        String accountId = "12345";
+        String encryptedCode = "encryptedCode";
+        String invitationCode = "validCode";
+
+        ClassInvitation classInvitation = new ClassInvitation();
+        classInvitation.setUserEmail(studentEmail);
+        classInvitation.setStatus(ClassInvitationStatus.INVITED);
+
+        when(cryptoService.decrypt(anyString())).thenReturn(invitationCode);
+        when(classInvitationRepository.findByCode(invitationCode)).thenReturn(Optional.of(classInvitation));
+        when(userRepository.findUserEntityByAccountId(accountId)).thenReturn(Optional.empty());
+
+        // Act
+        boolean result = studentService.acceptInvitation(studentEmail, accountId, encryptedCode);
+
+        // Assert
+        assertTrue(result);  // Assuming the new user will be created in this case
+        verify(studentRepository).save(any(Student.class));
+        verify(studentClassRepository).save(any(StudentClass.class));
     }
 
 }
