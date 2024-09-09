@@ -61,9 +61,18 @@ class StudentServiceImplTest {
     @InjectMocks
     private StudentServiceImpl studentService;
 
+    private StudentDto studentDto;
+
     @BeforeEach
     void setUp() {
+
         MockitoAnnotations.openMocks(this);
+        studentDto = new StudentDto();
+        studentDto.setUserId("12345");
+        studentDto.setFirstName("John");
+        studentDto.setLastName("Doe");
+        studentDto.setEmail("john.doe@example.com");
+        studentDto.setEducationLevel("COLLEGE");
     }
 
     @Test
@@ -108,6 +117,22 @@ class StudentServiceImplTest {
         StudentResponseDto responseDto = this.studentService.updateStudentProfile(inputStudentProfile);
 
         assertTrue(responseDto.isSuccess());
+    }
+
+    @Test
+    void testUpdateStudentProfile_UserDoesNotExist() {
+        // Mock the repository call to return an empty Optional for user
+        when(userRepository.findUserEntityByAccountId(studentDto.getUserId())).thenReturn(Optional.empty());
+
+        // Call the method
+        StudentResponseDto response = studentService.updateStudentProfile(studentDto);
+
+        // Verify that the new User and Student were created
+        verify(userRepository).save(any(User.class));
+        verify(studentRepository).save(any(Student.class));
+
+        // Check response
+        assertTrue(response.isSuccess());
     }
 
     @Test
