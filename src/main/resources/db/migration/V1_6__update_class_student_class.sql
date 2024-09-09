@@ -6,7 +6,7 @@ ALTER TABLE qms_user.student_class
 
 ALTER TABLE qms_user.class
     ADD COLUMN status VARCHAR,
-    ADD COLUMN class_start_ts timestamptz
+    ADD COLUMN class_start_ts timestamptz,
     ADD COLUMN class_end_ts timestamptz;
 
 ALTER TABLE qms_user.tutor_class

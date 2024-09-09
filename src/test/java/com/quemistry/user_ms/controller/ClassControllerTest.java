@@ -10,9 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.server.ResponseStatusException;
 
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ClassController.class)
+@Import(ControllerAdvice.class)
 class ClassControllerTest {
 
     @Autowired
@@ -118,13 +123,13 @@ class ClassControllerTest {
         String userId = "user123";
 
         // Mock the service to throw an exception
-        when(classService.getClassWithInvitations(classId, userId)).thenThrow(new RuntimeException("Class not found"));
+        when(classService.getClassWithInvitations(classId, userId)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
 
         // Perform the GET request and verify the exception handling
         mockMvc.perform(get("/v1/class/{classId}", classId)
                         .header("x-user-id", userId)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     private ClassResponseDto setClassResponseDtoMock(boolean flag) {

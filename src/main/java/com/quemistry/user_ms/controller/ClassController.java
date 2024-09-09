@@ -103,18 +103,13 @@ public class ClassController extends BaseController {
             @RequestHeader(value = HEADER_KEY_USER_ID) String tutorId, @PathVariable Long classId) {
         String functionName = "getClassAndInvitations";
 
-        try {
+        ResponseDto responseDto = prepareResponse(
+                controllerName,
+                functionName,
+                "The request has been completed.",
+                this.classService.getClassWithInvitations(classId, tutorId));
 
-            ResponseDto responseDto = prepareResponse(
-                    controllerName,
-                    functionName,
-                    "The request has been completed.",
-                    this.classService.getClassWithInvitations(classId, tutorId)
-            );
+        return ResponseEntity.ok(responseDto);
 
-            return ResponseEntity.ok(responseDto);
-        } catch (Exception ex) {
-            return prepareException(controllerName, functionName, ex);
-        }
     }
 }

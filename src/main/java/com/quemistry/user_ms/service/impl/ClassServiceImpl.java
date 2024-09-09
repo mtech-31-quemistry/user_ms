@@ -137,8 +137,9 @@ public class ClassServiceImpl implements ClassService {
 //        Optional<Class> classOptional = classRepository.findById(classId);
         Optional<Class> classOptional = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
         if (!classOptional.isPresent()){
-            log.info("class not found for classId={}", classId);
-            return null;
+            String message = String.format("class not found for classId=%s and tutorAccountId=%s",classId,tutorAccountId);
+            log.error(message);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
         }
         Class clazz = classOptional.get();
         ClassDto classDto = CLASSES_MAPPER.classToClassDto(clazz);
