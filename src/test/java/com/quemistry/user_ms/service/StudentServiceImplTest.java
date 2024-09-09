@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -79,17 +80,9 @@ class StudentServiceImplTest {
 
     @Test
     void givenStudent_whenCreateStudentProfile_thenReturnSuccess() {
-        var inputStudentProfile = new StudentDto(
-                "first",
-                "second",
-                "test@test.com",
-                "user-id",
-                "Sec2");
-
-
         when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.empty());
 
-        StudentResponseDto responseDto = this.studentService.updateStudentProfile(inputStudentProfile);
+        StudentResponseDto responseDto = this.studentService.updateStudentProfile(studentDto);
 
         assertTrue(responseDto.isSuccess());
     }
@@ -172,6 +165,26 @@ class StudentServiceImplTest {
         });
 
         assertEquals("tutor id=tutor123 not found", exception.getReason());
+    }
+
+    @Test
+    void testSendInvitation_ClassNotFound() {
+        // Given
+        String tutorAccountId = "tutor123";
+        String classCode = "class456";
+        StudentInvitationDto input = new StudentInvitationDto("John Doe", "student@example.com", classCode);
+
+        Tutor tutor = new Tutor();
+        when(tutorRepository.findTutorByUserEntityAccountId(tutorAccountId)).thenReturn(Optional.of(tutor));
+        when(classRepository.findByCode(classCode)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            studentService.sendInvitation(input, tutorAccountId);
+        });
+
+        assertEquals("404 NOT_FOUND \"class code=class456 not found\"", exception.getMessage());
+        verify(classInvitationRepository, never()).save(any(ClassInvitation.class));
     }
 
     @Test
