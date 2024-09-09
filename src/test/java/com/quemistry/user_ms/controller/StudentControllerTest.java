@@ -1,5 +1,6 @@
 package com.quemistry.user_ms.controller;
 
+import com.quemistry.user_ms.model.AcceptInvitationDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_EMAIL;
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -229,6 +231,40 @@ class StudentControllerTest {
                 .andExpect(status().isOk());
 
         verify(studentService, times(1)).updateStudentProfile(any());
+    }
+
+    @Test
+    void testAcceptStudentInvitation_Success() throws Exception {
+        String studentEmail = "student@example.com";
+        String studentAccountId = "12345";
+        String invitationCode = "validCode";
+
+        AcceptInvitationDto acceptInvitationDto = new AcceptInvitationDto(invitationCode);
+
+        when(studentService.acceptInvitation(studentEmail, studentAccountId, invitationCode))
+                .thenReturn(true);
+
+        mockMvc.perform(post("/v1/student/accept-invitation")
+                        .header(HEADER_KEY_USER_EMAIL, studentEmail)
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
+                        .contentType("application/json")
+                        .content("{\"invitationCode\": \"validCode\"}"))
+                .andExpect(status().isOk());
+
+        verify(studentService).acceptInvitation(studentEmail, studentAccountId, invitationCode);
+    }
+
+    @Test
+    void testAcceptStudentInvitation_EmailEmpty() throws Exception {
+        String studentAccountId = "12345";
+        String invitationCode = "validCode";
+
+        mockMvc.perform(post("/accept-invitation")
+                        .header(HEADER_KEY_USER_EMAIL, "")
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
+                        .contentType("application/json")
+                        .content("{\"invitationCode\": \"validCode\"}"))
+                .andExpect(status().isNotFound());
     }
 
     @DisplayName("Should return status 200 when send email invitation to student")
