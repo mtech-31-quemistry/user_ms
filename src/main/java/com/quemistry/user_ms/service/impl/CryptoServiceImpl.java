@@ -11,7 +11,6 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Base64;
 
 import static com.quemistry.user_ms.constant.EncryptionConstant.*;
@@ -21,14 +20,14 @@ public class CryptoServiceImpl implements CryptoService {
 
     private final Cipher cipher;
     private final SecretKey secretKey;
-    private final int ivKeySize;
+    private final String ivKey;
 
     public CryptoServiceImpl(
             @Value("${quemistry.user.cipher.key}") String secret,
-            @Value("${quemistry.user.cipher.size}") int ivKeySize) throws NoSuchPaddingException, NoSuchAlgorithmException {
-        this.ivKeySize = ivKeySize;
-        secretKey = new SecretKeySpec(secret.getBytes(), "AES");
-        cipher = Cipher.getInstance(ENCRYPT_ALGO);
+            @Value("${quemistry.user.cipher.iv}") String ivKey) throws NoSuchPaddingException, NoSuchAlgorithmException {
+        this.ivKey = ivKey;
+        this.secretKey = new SecretKeySpec(secret.getBytes(), "AES");
+        this.cipher = Cipher.getInstance(ENCRYPT_ALGO);
     }
 
     /**
@@ -37,11 +36,11 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String encrypt(String plainText) throws Exception {
-        if (plainText == null){
+        if (plainText == null) {
             return null;
         }
         byte[] cipherTextWithIv;
-        cipherTextWithIv = this.encryptWithPrefixIV(plainText.getBytes(UTF_8), this.getRandomNonce(this.ivKeySize));
+        cipherTextWithIv = this.encryptWithPrefixIV(plainText.getBytes(UTF_8), this.getNonce());
 
         return Base64.getEncoder().encodeToString(cipherTextWithIv);
     }
@@ -52,7 +51,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String decrypt(String cipherTextWithIv) throws Exception {
-        if (cipherTextWithIv == null){
+        if (cipherTextWithIv == null) {
             return null;
         }
         byte[] cipherTextWithIvBytes = Base64.getDecoder().decode(cipherTextWithIv);
@@ -83,7 +82,7 @@ public class CryptoServiceImpl implements CryptoService {
 
         ByteBuffer bb = ByteBuffer.wrap(cipherTextWithIv);
 
-        byte[] iv = new byte[this.ivKeySize];
+        byte[] iv = new byte[this.ivKey.length()];
         bb.get(iv);
 
         byte[] cipherText = new byte[bb.remaining()];
@@ -100,9 +99,7 @@ public class CryptoServiceImpl implements CryptoService {
 
     }
 
-    public byte[] getRandomNonce(int numBytes) {
-        byte[] nonce = new byte[numBytes];
-        new SecureRandom().nextBytes(nonce);
-        return nonce;
+    public byte[] getNonce() {
+        return this.ivKey.getBytes(UTF_8);
     }
 }

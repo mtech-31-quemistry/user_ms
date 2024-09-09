@@ -52,7 +52,7 @@ quemistry:
       url: ${HOST_NAME}
     cipher:
       key: ${DATABASE_CIPHER_KEY}
-      size: ${DATABASE_CIPHER_KEY_SIZE}
+      iv: ${DATABASE_CIPHER_IV}
 
 server:
   port: 80

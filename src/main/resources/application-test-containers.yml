@@ -34,4 +34,4 @@ quemistry:
       url: hostname
     cipher:
       key: test-encryption-key
-      size: 1
+      iv: iv-key

@@ -28,6 +28,27 @@ public class StudentController extends BaseController {
         this.studentService = studentService;
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<ResponseDto> getStudentProfile(
+            @NotBlank @RequestHeader(value = HEADER_KEY_USER_EMAIL) String studentEmail) {
+
+        String functionName = "getStudentProfileByEmail";
+
+        try {
+
+            ResponseDto responseDto = prepareResponse(
+                    controllerName,
+                    functionName,
+                    "Your profile has been retrieved.",
+                    this.studentService.getStudentProfile(studentEmail));
+
+            return ResponseEntity.ok(responseDto);
+
+        } catch (Exception ex) {
+            return prepareException(controllerName, functionName, ex);
+        }
+    }
+
     @PostMapping("/profile")
     public ResponseEntity<ResponseDto> saveOrUpdateStudentProfile(
             @RequestHeader(value = HEADER_KEY_USER_ID) String userId,
