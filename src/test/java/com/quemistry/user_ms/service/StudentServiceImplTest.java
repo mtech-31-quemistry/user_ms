@@ -62,6 +62,7 @@ class StudentServiceImplTest {
     private StudentServiceImpl studentService;
 
     private StudentDto studentDto;
+    private StudentInvitationDto invitationDto;
 
     @BeforeEach
     void setUp() {
@@ -94,13 +95,6 @@ class StudentServiceImplTest {
 
     @Test
     void givenStudent_whenUpdateStudentProfile_thenReturnSuccess() {
-        var inputStudentProfile = new StudentDto(
-                "first",
-                "second",
-                "test@test.com",
-                "user-id",
-                "Sec2");
-
         var studentEntity = new Student(2L, "P1", null);
 
         var userEntity = new User(
@@ -114,7 +108,7 @@ class StudentServiceImplTest {
         when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.of(userEntity));
         when(studentRepository.findStudentEntityByUserEntityId(any())).thenReturn(studentEntity);
 
-        StudentResponseDto responseDto = this.studentService.updateStudentProfile(inputStudentProfile);
+        StudentResponseDto responseDto = this.studentService.updateStudentProfile(studentDto);
 
         assertTrue(responseDto.isSuccess());
     }
@@ -164,6 +158,19 @@ class StudentServiceImplTest {
         boolean isSucceed = this.studentService.sendInvitation(inputStudentProfile, tutorId);
 
         assertTrue(isSucceed);
+    }
+
+    @Test
+    void testSendInvitation_TutorNotFound() {
+        // Mock the repository call to return an empty Optional for tutor
+        when(tutorRepository.findTutorByUserEntityAccountId("tutor123")).thenReturn(Optional.empty());
+
+        // Call the method and expect a ResponseStatusException
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            studentService.sendInvitation(invitationDto, "tutor123");
+        });
+
+        assertEquals("tutor id=tutor123 not found", exception.getReason());
     }
 
     @Test

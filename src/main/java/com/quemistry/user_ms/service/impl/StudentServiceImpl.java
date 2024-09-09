@@ -139,8 +139,8 @@ public class StudentServiceImpl implements StudentService {
 
         String message;
         if (tutorOptional.isEmpty()) {
-            message = "tutor id (%s) not found".formatted(tutorAccountId);
-            log.error("tutor id (%s) not found".formatted(tutorAccountId));
+            message = "tutor id=%s not found".formatted(tutorAccountId);
+            log.error(message);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
 //            return false;
         }
