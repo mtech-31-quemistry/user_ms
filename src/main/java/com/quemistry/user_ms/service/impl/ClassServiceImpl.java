@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,24 +45,26 @@ public class ClassServiceImpl implements ClassService {
     public ClassResponseDto saveClass(SaveClassRequest request) {
         log.info("save class started");
         log.info("save class -> user id: {}", request.getUserId());
-        List<Tutor> tutors = new ArrayList<>();
+        HashSet<Tutor> tutors = new HashSet<>();
         Optional<Tutor> tutorOptional = tutorRepository.findTutorByUserEntityAccountId(request.getUserId());
 
         if (!tutorOptional.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "tutor not found" );
         }
         tutors.add(tutorOptional.get());
-//        request.getTutorAccountIds().forEach(
-//                i -> {
-//                    Optional<Tutor> tutorOptional = tutorRepository.findTutorByUserEntityAccountId(i);
+
+
+//        request.getTutorEmails().forEach(
+//                e -> {
+//                    tutorOptional = tutorRepository.findTutorByUserEntityEmail(e);
 //                    if (!tutorOptional.isPresent()){
-//                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "tutor not found" );
+//
+//                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("tutor with email=%s not found", e));
 //                    }
 //                    tutors.add(tutorOptional.get());
 //
 //                }
 //        );
-
         var classResponseDto = new ClassResponseDto();
 
         var classEntity = new Class();
@@ -71,7 +74,7 @@ public class ClassServiceImpl implements ClassService {
         classEntity.setEducationLevel(request.getEducationLevel());
         classEntity.setSubject(request.getSubject());
         classEntity.setCreationAndModifiedDetails(now, request.getUserId());
-        classEntity.setTutors(tutors);
+        classEntity.setTutors(tutors.stream().toList());
         this.classRepository.save(classEntity);
 
         classResponseDto.setSuccess(true);
@@ -89,7 +92,9 @@ public class ClassServiceImpl implements ClassService {
         var classOptional = this.classRepository.findById(input.getId());
 
         if (classOptional.isEmpty())
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("class with id=%s not found",input.getId()));
+        HashSet<Tutor> tutors = new HashSet<>();
+
 
         var classResponseDto = new ClassResponseDto();
         var existingClass = classOptional.get();
@@ -98,6 +103,21 @@ public class ClassServiceImpl implements ClassService {
         existingClass.setEducationLevel(input.getEducationLevel());
         existingClass.setSubject(input.getSubject());
         existingClass.setModified(input.getUserId());
+
+        //TODO: uncomment below when email encryption is updated
+
+//        request.getTutorEmails().forEach(
+//                e -> {
+//                    tutorOptional = tutorRepository.findTutorByUserEntityEmail(e);
+//                    if (!tutorOptional.isPresent()){
+//
+//                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("tutor with email=%s not found", e));
+//                    }
+//                    tutors.add(tutorOptional.get());
+//
+//                }
+//        );
+//        existingClass.setTutors(tutors.stream().toList());
         this.classRepository.save(existingClass);
 
         classResponseDto.setSuccess(true);
@@ -128,4 +148,6 @@ public class ClassServiceImpl implements ClassService {
         classDto.setTutorEmails(clazz.getTutors().stream().map(Tutor::getUserEntity).map(User::getEmail).collect(Collectors.toList()));
         return classDto;
     }
+
+
 }

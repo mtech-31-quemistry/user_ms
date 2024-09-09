@@ -16,10 +16,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -85,15 +89,24 @@ class ClassServiceImplTest {
 
     @Test
     void givenClass_AbleToUpdateClass() {
-        var existingClass = new Class(1L, "test", "test", "test sub", "test", null, Collections.emptyList());
+        var existingClass = new Class(1L, "code", "description", "subject", "status", "eudcation",  Collections.emptyList(), Collections.emptyList());
 
         when(classRepository.findById(anyLong())).thenReturn(Optional.of(existingClass));
         Assertions.assertNotNull(this.classService.updateClass(classDto));
     }
 
     @Test
-    void givenClassNotFound_ReturnNull() {
-        Assertions.assertNull(this.classService.updateClass(classDto));
+    void testUpdateClass_ClassNotFound() {
+        // Mock the repository to return an empty Optional
+        when(classRepository.findById(classDto.getId())).thenReturn(Optional.empty());
+
+        // Expect a ResponseStatusException with a NOT_FOUND status
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            classService.updateClass(classDto);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertEquals("class with id=1 not found", exception.getReason());
     }
 
 

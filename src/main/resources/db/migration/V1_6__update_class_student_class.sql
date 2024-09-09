@@ -5,7 +5,9 @@ ALTER TABLE qms_user.student_class
     ADD COLUMN modified_by character varying(36) DEFAULT 'system';
 
 ALTER TABLE qms_user.class
-    ADD COLUMN status VARCHAR;
+    ADD COLUMN status VARCHAR,
+    ADD COLUMN class_start_ts timestamptz
+    ADD COLUMN class_end_ts timestamptz;
 
 ALTER TABLE qms_user.tutor_class
     DROP COLUMN status,

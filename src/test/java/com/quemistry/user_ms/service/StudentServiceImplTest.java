@@ -129,9 +129,7 @@ class StudentServiceImplTest {
         );
 
         var tutorEntity = new Tutor(2L, "P1", "centre", userEntity, Collections.emptyList());
-
-        var classEntity = new Class(1L, "test", "test2", "test3", "test4", null, Collections.emptyList());
-
+        var classEntity = new Class(1L, "test", "test2", "test3", "test4", null, Collections.emptyList(), Collections.emptyList());
 
         when(tutorRepository.findTutorByUserEntityAccountId(anyString())).thenReturn(Optional.of(tutorEntity));
         when(classRepository.findByCode(any())).thenReturn(Optional.of(classEntity));

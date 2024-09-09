@@ -4,6 +4,8 @@ import java.util.Random;
 
 public class StringHelper {
 
+    private Random random = new Random();  // Compliant
+
     public static String getRandomString(int length) {
         String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder salt = new StringBuilder();

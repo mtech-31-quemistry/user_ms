@@ -10,4 +10,7 @@ public interface TutorRepository extends JpaRepository<Tutor, Long> {
 
     @EntityGraph(value = "tutor-entity-graph")
     Optional<Tutor> findTutorByUserEntityAccountId(String accountId);
+
+    @EntityGraph(value = "tutor-entity-graph")
+    Optional<Tutor> findTutorByUserEntityEmail(String email);
 }

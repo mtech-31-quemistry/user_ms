@@ -36,6 +36,8 @@ public class Class extends Base {
 
     private String subject;
 
+    private String status;
+
     @Column(name = "education_level")
     private String educationLevel;
 
