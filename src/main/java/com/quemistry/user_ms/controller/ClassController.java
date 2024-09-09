@@ -82,20 +82,13 @@ public class ClassController extends BaseController {
             @RequestHeader(value = HEADER_KEY_USER_ID) String userId) {
 
         String functionName = "getAllClasses";
-
-        try {
-
-            ResponseDto responseDto = prepareResponse(
-                    controllerName,
-                    functionName,
-                    "The request has been completed.",
-                    this.classService.getAllClasses()
-            );
-
-            return ResponseEntity.ok(responseDto);
-        } catch (Exception ex) {
-            return prepareException(controllerName, functionName, ex);
-        }
+        ResponseDto responseDto = prepareResponse(
+                controllerName,
+                functionName,
+                "The request has been completed.",
+                this.classService.getAllClasses()
+        );
+        return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/{classId}")

@@ -53,6 +53,10 @@
         {
           "name": "SMTP_USER_NAME",
           "valueFrom": "arn:aws:ssm:ap-southeast-1:730335183958:parameter/cicd/prod/smtp/username"
+        },
+        {
+          "name": "HOST_NAME",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:730335183958:parameter/cicd/prod/webclient/url"
         }
       ],
       "ulimits": [],
