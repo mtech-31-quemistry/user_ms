@@ -13,7 +13,7 @@ class AttributeEncryptorTest {
     private AttributeEncryptor attributeEncryptor;
 
     void init() throws NoSuchPaddingException, NoSuchAlgorithmException {
-        var cryptoService = new CryptoServiceImpl("770A8A65DA156D24EE2A093277530142", 20);
+        var cryptoService = new CryptoServiceImpl("JUDTixu0WmNfaPXEfnFgwZVmcGZ6yVUI", "test");
         attributeEncryptor = new AttributeEncryptor(cryptoService);
     }
 
@@ -23,7 +23,7 @@ class AttributeEncryptorTest {
         String encryptedText = attributeEncryptor.convertToDatabaseColumn("plaintext");
         System.out.println(encryptedText);
         Assertions.assertFalse(encryptedText.isEmpty());
-        Assertions.assertEquals(60, encryptedText.length());
+        Assertions.assertEquals(40, encryptedText.length());
     }
 
     @Test
@@ -31,7 +31,7 @@ class AttributeEncryptorTest {
         init();
 
         String expectedDecryptedText = "plaintext";
-        String decryptedText = attributeEncryptor.convertToEntityAttribute("EZE0KNIfVk9Izr3FQPOA8Wn5cg69vy0i9frvpueLEXFlxRr93PL660KigDYz");
+        String decryptedText = attributeEncryptor.convertToEntityAttribute("dGVzdJaGROD7z6oawEIAuDbZxK0Oq8gBTFl6A4A=");
         Assertions.assertEquals(expectedDecryptedText, decryptedText);
     }
 }

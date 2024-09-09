@@ -12,4 +12,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     @EntityGraph(value = "student-entity-graph")
     Optional<Student> findStudentByUserEntityAccountId(String accountId);
+
+    Optional<Student> findStudentByUserEntityEmail(String email);
 }

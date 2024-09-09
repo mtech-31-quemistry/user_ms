@@ -6,17 +6,9 @@ import com.quemistry.user_ms.helper.StringHelper;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
-import com.quemistry.user_ms.repository.ClassInvitationRepository;
-import com.quemistry.user_ms.repository.ClassRepository;
-import com.quemistry.user_ms.repository.StudentClassRepository;
-import com.quemistry.user_ms.repository.StudentRepository;
-import com.quemistry.user_ms.repository.TutorRepository;
-import com.quemistry.user_ms.repository.UserRepository;
+import com.quemistry.user_ms.repository.*;
 import com.quemistry.user_ms.repository.entity.Class;
-import com.quemistry.user_ms.repository.entity.ClassInvitation;
-import com.quemistry.user_ms.repository.entity.Student;
-import com.quemistry.user_ms.repository.entity.StudentClass;
-import com.quemistry.user_ms.repository.entity.User;
+import com.quemistry.user_ms.repository.entity.*;
 import com.quemistry.user_ms.service.CryptoService;
 import com.quemistry.user_ms.service.NotificationService;
 import com.quemistry.user_ms.service.StudentService;
@@ -149,7 +141,7 @@ public class StudentServiceImpl implements StudentService {
         if (tutorOptional.isEmpty()) {
             message = "tutor id (%s) not found".formatted(tutorAccountId);
             log.error("tutor id (%s) not found".formatted(tutorAccountId));
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,message );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
 //            return false;
         }
         Optional<Class> classOptional = classRepository.findByCode(input.classCode());
@@ -157,7 +149,7 @@ public class StudentServiceImpl implements StudentService {
         if (classOptional.isEmpty()) {
             message = "class code (%s) not found".formatted(input.classCode());
             log.error("class code (%s) not found".formatted(input.classCode()));
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,message );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
 //            return false;
         }
 
@@ -207,7 +199,7 @@ public class StudentServiceImpl implements StudentService {
         ClassInvitation classInvitation = this.classInvitationRepository.findByCode(invitationCode).orElseThrow();
 
         if (!classInvitation.getUserEmail().equals(studentEmail)) {
-            String message = String.format("invited user (%s) and request user (%s) is not same",classInvitation.getUserEmail(), studentEmail);
+            String message = String.format("invited user (%s) and request user (%s) is not same", classInvitation.getUserEmail(), studentEmail);
             log.error(message);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
         }
@@ -217,9 +209,9 @@ public class StudentServiceImpl implements StudentService {
 
         Optional<User> userOptional = userRepository.findUserEntityByAccountId(accountId);
         Student student;
-        if (userOptional.isEmpty()){
+        if (userOptional.isEmpty()) {
             log.info("user with accountId={} not found", accountId);
-            student = new Student(accountId,studentEmail);
+            student = new Student(accountId, studentEmail);
             student = studentRepository.save(student);
         } else {
             Optional<Student> studentOptional = studentRepository.findStudentByUserEntityAccountId(accountId);
@@ -242,5 +234,22 @@ public class StudentServiceImpl implements StudentService {
 
         log.info("Accept invitation ended");
         return true;
+    }
+
+    @Override
+    public StudentDto getStudentProfile(String studentEmail) {
+        StudentDto dto = new StudentDto();
+        Optional<Student> optionalStudent = this.studentRepository.findStudentByUserEntityEmail(studentEmail);
+
+        if (optionalStudent.isPresent()) {
+            Student student = optionalStudent.get();
+            dto.setEducationLevel(student.getEducationLevel());
+            dto.setEmail(student.getUserEntity().getEmail());
+            dto.setFirstName(student.getUserEntity().getFirstName());
+            dto.setLastName(student.getUserEntity().getLastName());
+            dto.setUserId(student.getUserEntity().getAccountId());
+        }
+
+        return dto;
     }
 }
