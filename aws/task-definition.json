@@ -43,8 +43,8 @@
           "valueFrom": "arn:aws:ssm:ap-southeast-1:730335183958:parameter/cicd/prod/postgre/database/encryption/key"
         },
         {
-          "name": "DATABASE_CIPHER_KEY_SIZE",
-          "valueFrom": "arn:aws:ssm:ap-southeast-1:730335183958:parameter/cicd/prod/postgre/database/encryption/key/size"
+          "name": "DATABASE_CIPHER_IV",
+          "valueFrom": "arn:aws:ssm:ap-southeast-1:730335183958:parameter/cicd/prod/postgre/database/encryption/iv"
         },
         {
           "name": "SMTP_PASSWORD",

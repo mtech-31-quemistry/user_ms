@@ -1,6 +1,7 @@
 package com.quemistry.user_ms.controller;
 
 import com.quemistry.user_ms.model.AcceptInvitationDto;
+import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +18,11 @@ import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_EMAIL;
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(StudentController.class)
-
 class StudentControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -288,6 +289,47 @@ class StudentControllerTest {
                 .andExpect(jsonPath("$.statusCode").value(expectedStatusCode));
 
         verify(studentService, times(1)).sendInvitation(any(), anyString());
+    }
+
+    @DisplayName("Should return status 200 when student accepts invitation")
+    @Test
+    void givenStudents_whenAcceptInvitation_thenStatus200() throws Exception {
+        String expectedStatusCode = "00";
+
+        when(studentService.acceptInvitation(anyString(), anyString(), anyString())).thenReturn(true);
+
+        mockMvc.perform(post("/v1/student/accept-invitation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("x-user-id", HEADER_KEY_USER_ID)
+                        .header("x-user-email", HEADER_KEY_USER_EMAIL)
+                        .content("""
+                                {
+                                      "invitationCode": "invitation-code"
+                                  }"""))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.statusCode").value(expectedStatusCode));
+
+        verify(studentService, times(1)).acceptInvitation(anyString(), anyString(), anyString());
+    }
+
+    @DisplayName("Should return status 200 when student retrieve the profile")
+    @Test
+    void givenStudents_whenGetProfile_thenStatus200() throws Exception {
+        String expectedStatusCode = "00";
+
+        StudentDto studentDto = new StudentDto();
+
+        when(studentService.getStudentProfile(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/v1/student/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("x-user-email", HEADER_KEY_USER_EMAIL))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.statusCode").value(expectedStatusCode));
+
+        verify(studentService, times(1)).getStudentProfile(anyString());
     }
 
     private StudentResponseDto setStudentResponseMock(boolean flag) {
