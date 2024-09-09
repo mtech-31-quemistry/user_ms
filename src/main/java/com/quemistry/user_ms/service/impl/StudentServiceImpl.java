@@ -147,8 +147,8 @@ public class StudentServiceImpl implements StudentService {
         Optional<Class> classOptional = classRepository.findByCode(input.classCode());
 
         if (classOptional.isEmpty()) {
-            message = "class code (%s) not found".formatted(input.classCode());
-            log.error("class code (%s) not found".formatted(input.classCode()));
+            message = "class code=%s not found".formatted(input.classCode());
+            log.error(message);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
 //            return false;
         }
