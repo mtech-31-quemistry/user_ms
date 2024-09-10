@@ -15,11 +15,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class ControllerAdvice {
 
     @ExceptionHandler(value = {Exception.class})
-    protected ResponseEntity<Object> handleGenericExceptions(ResponseStatusException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleGenericExceptions(Exception ex, WebRequest request) {
+
         ResponseDto responseDto = new ResponseDto();
         responseDto.setStatusCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
-        responseDto.setStatusMessage(ex.getReason());
-        return ResponseEntity.status(ex.getStatusCode()).body(responseDto);
+        responseDto.setStatusMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
     @ExceptionHandler(value = {ResponseStatusException.class})
