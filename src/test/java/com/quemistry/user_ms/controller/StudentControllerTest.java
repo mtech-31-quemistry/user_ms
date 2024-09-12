@@ -30,6 +30,9 @@ class StudentControllerTest {
     @MockBean
     private StudentService studentService;
 
+    String studentEmail = "student@example.com";
+    String studentAccountId = "12345";
+
 
     @BeforeEach
     void init() {
@@ -50,7 +53,8 @@ class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(HEADER_KEY_USER_ID, HEADER_KEY_USER_ID)
+                        .header(HEADER_KEY_USER_EMAIL, studentEmail)
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -96,7 +100,8 @@ class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(HEADER_KEY_USER_ID, "")
+                        .header(HEADER_KEY_USER_EMAIL, studentEmail)
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
                         .content("""
                                 {
                                      "firstName": "",
@@ -132,7 +137,8 @@ class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(HEADER_KEY_USER_ID, 12314)
+                        .header(HEADER_KEY_USER_EMAIL, studentEmail)
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -156,7 +162,8 @@ class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(HEADER_KEY_USER_ID, 12314)
+                        .header(HEADER_KEY_USER_EMAIL, studentEmail)
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -178,7 +185,8 @@ class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(HEADER_KEY_USER_ID, 12314)
+                        .header(HEADER_KEY_USER_EMAIL, studentEmail)
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -199,7 +207,8 @@ class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(HEADER_KEY_USER_ID, 12314)
+                        .header(HEADER_KEY_USER_EMAIL, studentEmail)
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -221,7 +230,9 @@ class StudentControllerTest {
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(HEADER_KEY_USER_ID, 12314)
+                        .header(HEADER_KEY_USER_EMAIL, studentEmail)
+                        .header(HEADER_KEY_USER_ID, studentAccountId)
+
                         .content("""
                                 {
                                      "firstName": "Test",
@@ -236,8 +247,6 @@ class StudentControllerTest {
 
     @Test
     void testAcceptStudentInvitation_Success() throws Exception {
-        String studentEmail = "student@example.com";
-        String studentAccountId = "12345";
         String invitationCode = "validCode";
 
         AcceptInvitationDto acceptInvitationDto = new AcceptInvitationDto(invitationCode);

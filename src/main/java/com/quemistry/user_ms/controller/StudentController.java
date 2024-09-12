@@ -51,7 +51,8 @@ public class StudentController extends BaseController {
 
     @PostMapping("/profile")
     public ResponseEntity<ResponseDto> saveOrUpdateStudentProfile(
-            @RequestHeader(value = HEADER_KEY_USER_ID) String userId,
+            @NotBlank @RequestHeader(value = HEADER_KEY_USER_ID) String userId,
+            @NotBlank @RequestHeader(value = HEADER_KEY_USER_EMAIL) String email,
             @Valid @RequestBody StudentDto input) {
 
         String functionName = "saveOrUpdateStudentProfile";
@@ -62,7 +63,7 @@ public class StudentController extends BaseController {
                 throw new IllegalArgumentException("user id is empty");
 
             input.setUserId(userId);
-
+            input.setEmail(email);
             ResponseDto responseDto = prepareResponse(
                     controllerName,
                     functionName,
