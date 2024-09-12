@@ -87,6 +87,26 @@ class TutorServiceImplTest {
     }
 
     @Test
+    void testSaveProfile_ExistingTutor() {
+        // Setup: Mock finding an existing tutor
+        when(tutorRepository.findTutorByUserEntityEmail(tutorDto.getEmail())).thenReturn(Optional.of(tutor));
+        when(userRepository.saveAndFlush(any(User.class))).thenReturn(user);
+        when(tutorRepository.saveAndFlush(any(Tutor.class))).thenReturn(tutor);
+
+        // Execute: Call saveProfile with the tutorDto
+        TutorDto result = tutorService.saveProfile(tutorDto);
+
+        // Verify: Ensure the repositories were called
+        verify(tutorRepository).findTutorByUserEntityEmail(tutorDto.getEmail());
+        verify(userRepository).saveAndFlush(any(User.class));
+        verify(tutorRepository).saveAndFlush(any(Tutor.class));
+
+        // Assert: Check that the returned TutorDto is correct
+        assertNotNull(result);
+        assertEquals(tutorDto.getEmail(), result.getEmail());
+    }
+
+    @Test
     void getProfile_success() {
         // Given
         String email = "tutor@example.com";

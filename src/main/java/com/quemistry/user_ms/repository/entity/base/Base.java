@@ -50,5 +50,10 @@ public class Base {
         this.setModifiedBy(user);
     }
 
+    public void setCreated(String user) {
+        this.setCreatedOn(OffsetDateTime.now());
+        this.setCreatedBy(user);
+    }
+
 
 }

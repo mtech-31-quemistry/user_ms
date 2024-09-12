@@ -36,19 +36,33 @@ public class TutorServiceImpl implements TutorService {
     public TutorDto saveProfile(TutorDto tutorDto) {
         log.info("save profile -> tutorDto: {}", tutorDto);
 
-        User user = new User();
-        user.setAccountId(tutorDto.getAccountId());
-        user.setEmail(tutorDto.getEmail());
+        Optional<Tutor> optionalTutor = tutorRepository.findTutorByUserEntityEmail(tutorDto.getEmail());
+
+        Tutor tutor;
+        User user;
+        if (optionalTutor.isPresent()) {
+            log.info("save profile -> existing tutor record found, update profile");
+            tutor = optionalTutor.get();
+            user = tutor.getUserEntity();
+        } else {
+            log.info("save profile -> tutor not found, create new profile");
+            user = new User();
+            tutor = new Tutor();
+            user.setAccountId(tutorDto.getAccountId());
+            user.setEmail(tutorDto.getEmail());
+            user.setCreated(tutorDto.getAccountId());
+            tutor.setCreated(tutorDto.getAccountId());
+        }
         user.setFirstName(tutorDto.getFirstName());
         user.setLastName(tutorDto.getLastName());
-        user.setCreationAndModifiedDetails(OffsetDateTime.now(), tutorDto.getAccountId());
+        user.setModified(tutorDto.getAccountId());
         user = userRepository.saveAndFlush(user);
         log.info("saved user: {}", user);
-        Tutor tutor = new Tutor();
+
         tutor.setUserEntity(user);
         tutor.setEducationLevel(tutorDto.getEducationLevel());
         tutor.setTuitionCentre(tutorDto.getTuitionCentre());
-        tutor.setCreationAndModifiedDetails(OffsetDateTime.now(), tutorDto.getAccountId());
+        tutor.setModified(tutorDto.getAccountId());
         tutor = tutorRepository.saveAndFlush(tutor);
         log.info("saved tutor: {}", tutor);
         return UserMapper.INSTANCE.tutorToTutorDto(tutor);
