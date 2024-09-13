@@ -172,7 +172,7 @@ public class StudentServiceImpl implements StudentService {
         templateItems.put("%%student_name%%", input.studentFullName());
         templateItems.put("%%class_room%%", classEntity.getDescription());
         templateItems.put("%%tuition_center%%", tutor.getTuitionCentre());
-        templateItems.put("%%invitation_url%%", "%s/student/accept-invitation?code=%s".formatted(this.frontendURL, encryptedClassCode));
+        templateItems.put("%%invitation_url%%", "%s/students/invitation/accept?code=%s".formatted(this.frontendURL, encryptedClassCode));
         templateItems.put("%%tutor_name%%", tutor.getUserEntity().getFullName());
 
         boolean canSend = this.notificationService.sendEmailNotification(
@@ -193,11 +193,11 @@ public class StudentServiceImpl implements StudentService {
         log.debug("studentEmail: {}, accountId: {}, code: {}", studentEmail, accountId, code);
         String decoded = URLDecoder.decode(code, StandardCharsets.UTF_8);
 
-        log.debug("decoded: {}", studentEmail, accountId, code);
+        log.debug("decoded: {}, {}, {}", studentEmail, accountId, code);
         String invitationCode = this.cryptoService.decrypt(decoded);
         log.debug("decrypted invitationCode: {} ", invitationCode);
         Optional<ClassInvitation> classInvitationOptional = this.classInvitationRepository.findByCode(invitationCode);
-        if (classInvitationOptional.isEmpty()){
+        if (classInvitationOptional.isEmpty()) {
             String message = String.format("Class Invitation with code=%s not found", invitationCode);
             log.error(message);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
