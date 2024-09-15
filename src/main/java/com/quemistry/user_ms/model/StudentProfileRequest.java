@@ -7,21 +7,23 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentDto {
+public class StudentProfileRequest {
 
-    private Long id;
-
+    @NotBlank
     private String firstName;
 
+    @NotBlank
     private String lastName;
 
     private String email;
 
-    private String accountId;
+    private String userId;
 
     private String educationLevel;
+
+    private String tuitionCentre;
 
 }

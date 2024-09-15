@@ -49,7 +49,7 @@ class StudentControllerTest {
         String expectedStatusMessage = "Your profile has been updated.";
         boolean expectedSuccessFlag = true;
 
-        when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(true));
+        when(studentService.updateStudentProfile(any())).thenReturn(getStudentDtoMock());
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,8 +65,8 @@ class StudentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.statusCode").value(expectedStatusCode))
-                .andExpect(jsonPath("$.statusMessage").value(expectedStatusMessage))
-                .andExpect(jsonPath("$.payload.success").value(expectedSuccessFlag));
+                .andExpect(jsonPath("$.statusMessage").value(expectedStatusMessage));
+//                .andExpect(jsonPath("$.payload.success").value(expectedSuccessFlag));
 
         verify(studentService, times(1)).updateStudentProfile(any());
     }
@@ -75,7 +75,7 @@ class StudentControllerTest {
     @Test
     void givenStudents_whenSaveStudentProfileWithoutUserID_thenStatus400() throws Exception {
 
-        when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(true));
+        when(studentService.updateStudentProfile(any())).thenReturn(getStudentDtoMock());
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ class StudentControllerTest {
     @Test
     void givenStudents_whenSaveStudentProfileWithAnyInvalidBodyProperty_thenStatus400() throws Exception {
 
-        when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(true));
+        when(studentService.updateStudentProfile(any())).thenReturn(getStudentDtoMock());
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +118,7 @@ class StudentControllerTest {
     @Test
     void givenStudents_whenSaveStudentProfileWithoutBody_thenStatus400() throws Exception {
 
-        when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(false));
+        when(studentService.updateStudentProfile(any())).thenReturn(null);
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -203,7 +203,7 @@ class StudentControllerTest {
     @Test
     void givenStudents_whenSaveStudentProfile_ReturnStatusCode01_thenStatus400() throws Exception {
 
-        when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(false));
+        when(studentService.updateStudentProfile(any())).thenReturn(null);
 
         mockMvc.perform(post("/v1/student/profile")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -216,7 +216,7 @@ class StudentControllerTest {
                                      "email": "test@test.com",
                                      "educationLevel": "Sec 2"
                                  }"""))
-                .andExpect(status().isOk());
+                .andExpect(status().isInternalServerError());
 
         verify(studentService, times(1)).updateStudentProfile(any());
     }
@@ -225,7 +225,7 @@ class StudentControllerTest {
     @Test
     void givenStudents_whenSaveStudentProfile_ReturnStatusCode02_thenStatus400() throws Exception {
 
-        when(studentService.updateStudentProfile(any())).thenReturn(setStudentResponseMock(false));
+        when(studentService.updateStudentProfile(any())).thenReturn(null);
 
 
         mockMvc.perform(post("/v1/student/profile")
@@ -240,7 +240,7 @@ class StudentControllerTest {
                                      "email": "test@test.com",
                                      "educationLevel": "Sec 2"
                                  }"""))
-                .andExpect(status().isOk());
+                .andExpect(status().isInternalServerError());
 
         verify(studentService, times(1)).updateStudentProfile(any());
     }
@@ -341,8 +341,8 @@ class StudentControllerTest {
         verify(studentService, times(1)).getStudentProfile(anyString());
     }
 
-    private StudentResponseDto setStudentResponseMock(boolean flag) {
-        return new StudentResponseDto(flag);
+    private StudentDto getStudentDtoMock() {
+        return new StudentDto();
     }
 
 }

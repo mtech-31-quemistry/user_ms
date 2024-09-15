@@ -3,6 +3,7 @@ package com.quemistry.user_ms.service;
 import com.quemistry.user_ms.constant.ClassInvitationStatus;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
+import com.quemistry.user_ms.model.StudentProfileRequest;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.*;
 import com.quemistry.user_ms.repository.entity.Class;
@@ -24,10 +25,10 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -63,28 +64,29 @@ class StudentServiceImplTest {
     @InjectMocks
     private StudentServiceImpl studentService;
 
-    private StudentDto studentDto;
+    private StudentProfileRequest studentProfileRequest;
     private StudentInvitationDto invitationDto;
 
     @BeforeEach
     void setUp() {
 
         MockitoAnnotations.openMocks(this);
-        studentDto = new StudentDto();
-        studentDto.setUserId("12345");
-        studentDto.setFirstName("John");
-        studentDto.setLastName("Doe");
-        studentDto.setEmail("john.doe@example.com");
-        studentDto.setEducationLevel("COLLEGE");
+        studentProfileRequest = new StudentProfileRequest();
+        studentProfileRequest.setUserId("12345");
+        studentProfileRequest.setFirstName("John");
+        studentProfileRequest.setLastName("Doe");
+        studentProfileRequest.setEmail("john.doe@example.com");
+        studentProfileRequest.setEducationLevel("COLLEGE");
+        when(studentRepository.save(any(Student.class))).thenReturn(new Student());
     }
 
     @Test
     void givenStudent_whenCreateStudentProfile_thenReturnSuccess() {
         when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.empty());
 
-        StudentResponseDto responseDto = this.studentService.updateStudentProfile(studentDto);
+        StudentDto studentDto = this.studentService.updateStudentProfile(studentProfileRequest);
 
-        assertTrue(responseDto.isSuccess());
+        assertNotNull(studentDto);
     }
 
     @Test
@@ -102,25 +104,25 @@ class StudentServiceImplTest {
         when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.of(userEntity));
         when(studentRepository.findStudentEntityByUserEntityId(any())).thenReturn(studentEntity);
 
-        StudentResponseDto responseDto = this.studentService.updateStudentProfile(studentDto);
+        StudentDto studentDto = this.studentService.updateStudentProfile(studentProfileRequest);
 
-        assertTrue(responseDto.isSuccess());
+        assertNotNull(studentDto);
     }
 
     @Test
     void testUpdateStudentProfile_UserDoesNotExist() {
         // Mock the repository call to return an empty Optional for user
-        when(userRepository.findUserEntityByAccountId(studentDto.getUserId())).thenReturn(Optional.empty());
+        when(userRepository.findUserEntityByAccountId(studentProfileRequest.getUserId())).thenReturn(Optional.empty());
 
         // Call the method
-        StudentResponseDto response = studentService.updateStudentProfile(studentDto);
+        StudentDto studentDto = studentService.updateStudentProfile(studentProfileRequest);
 
         // Verify that the new User and Student were created
         verify(userRepository).save(any(User.class));
         verify(studentRepository).save(any(Student.class));
 
         // Check response
-        assertTrue(response.isSuccess());
+        assertNotNull(studentDto);
     }
 
     @Test

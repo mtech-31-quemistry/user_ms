@@ -5,6 +5,7 @@ import com.quemistry.user_ms.controller.base.BaseController;
 import com.quemistry.user_ms.model.AcceptInvitationDto;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
+import com.quemistry.user_ms.model.StudentProfileRequest;
 import com.quemistry.user_ms.model.base.ResponseDto;
 import com.quemistry.user_ms.service.StudentService;
 import jakarta.validation.Valid;
@@ -53,7 +54,7 @@ public class StudentController extends BaseController {
     public ResponseEntity<ResponseDto> saveOrUpdateStudentProfile(
             @NotBlank @RequestHeader(value = HEADER_KEY_USER_ID) String userId,
             @NotBlank @RequestHeader(value = HEADER_KEY_USER_EMAIL) String email,
-            @Valid @RequestBody StudentDto input) {
+            @Valid @RequestBody StudentProfileRequest studentProfileRequest) {
 
         String functionName = "saveOrUpdateStudentProfile";
 
@@ -62,13 +63,13 @@ public class StudentController extends BaseController {
             if (StringUtil.isNullOrEmpty(userId))
                 throw new IllegalArgumentException("user id is empty");
 
-            input.setUserId(userId);
-            input.setEmail(email);
+            studentProfileRequest.setUserId(userId);
+            studentProfileRequest.setEmail(email);
             ResponseDto responseDto = prepareResponse(
                     controllerName,
                     functionName,
                     "Your profile has been updated.",
-                    this.studentService.updateStudentProfile(input));
+                    this.studentService.updateStudentProfile(studentProfileRequest));
 
             return ResponseEntity.ok(responseDto);
 

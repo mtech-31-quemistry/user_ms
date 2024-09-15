@@ -3,8 +3,10 @@ package com.quemistry.user_ms.service.impl;
 import com.quemistry.user_ms.constant.ClassInvitationStatus;
 import com.quemistry.user_ms.constant.UserConstant;
 import com.quemistry.user_ms.helper.StringHelper;
+import com.quemistry.user_ms.mapper.UserMapper;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
+import com.quemistry.user_ms.model.StudentProfileRequest;
 import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.*;
 import com.quemistry.user_ms.repository.entity.Class;
@@ -74,55 +76,55 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponseDto updateStudentProfile(StudentDto student) {
+    public StudentDto updateStudentProfile(StudentProfileRequest studentProfileRequest) {
         log.info("update student profile started");
-        log.info("update student profile -> user id: {}", student.getUserId());
+        log.info("update student profile -> user id: {}", studentProfileRequest.getUserId());
 
         var studentResponseDto = new StudentResponseDto();
 
-        var userOptional = this.userRepository.findUserEntityByAccountId(student.getUserId());
+        var userOptional = this.userRepository.findUserEntityByAccountId(studentProfileRequest.getUserId());
 
         if (userOptional.isPresent()) {
             User existingUser = userOptional.get();
             Student existingStudent = this.studentRepository.findStudentEntityByUserEntityId(existingUser.getId());
 
-            existingUser.setFirstName(student.getFirstName());
-            existingUser.setLastName(student.getLastName());
-            existingUser.setEmail(student.getEmail());
-            existingUser.setModifiedBy(student.getUserId());
+            existingUser.setFirstName(studentProfileRequest.getFirstName());
+            existingUser.setLastName(studentProfileRequest.getLastName());
+            existingUser.setEmail(studentProfileRequest.getEmail());
+            existingUser.setModifiedBy(studentProfileRequest.getUserId());
             existingUser.setModifiedOn(OffsetDateTime.now());
             this.userRepository.save(existingUser);
 
-            existingStudent.setEducationLevel(student.getEducationLevel());
-            existingStudent.setModifiedBy(student.getUserId());
+            existingStudent.setEducationLevel(studentProfileRequest.getEducationLevel());
+            existingStudent.setModifiedBy(studentProfileRequest.getUserId());
             existingStudent.setModifiedOn(OffsetDateTime.now());
-            this.studentRepository.save(existingStudent);
+            Student student = this.studentRepository.save(existingStudent);
 
-            studentResponseDto.setSuccess(true);
+//            studentResponseDto.setSuccess(true);
             log.info("update student profile finished");
 
-            return studentResponseDto;
+            return UserMapper.INSTANCE.studentToStudentDto(student);
         }
 
         var userEntity = new User();
         var now = OffsetDateTime.now();
-        userEntity.setAccountId(student.getUserId());
-        userEntity.setFirstName(student.getFirstName());
-        userEntity.setLastName(student.getLastName());
-        userEntity.setEmail(student.getEmail());
-        userEntity.setCreationAndModifiedDetails(now, student.getUserId());
+        userEntity.setAccountId(studentProfileRequest.getUserId());
+        userEntity.setFirstName(studentProfileRequest.getFirstName());
+        userEntity.setLastName(studentProfileRequest.getLastName());
+        userEntity.setEmail(studentProfileRequest.getEmail());
+        userEntity.setCreationAndModifiedDetails(now, studentProfileRequest.getUserId());
         this.userRepository.save(userEntity);
 
         var studentEntity = new Student();
         studentEntity.setUserEntity(userEntity);
-        studentEntity.setEducationLevel(student.getEducationLevel());
-        studentEntity.setCreationAndModifiedDetails(now, student.getUserId());
-        this.studentRepository.save(studentEntity);
+        studentEntity.setEducationLevel(studentProfileRequest.getEducationLevel());
+        studentEntity.setCreationAndModifiedDetails(now, studentProfileRequest.getUserId());
+        Student student = this.studentRepository.save(studentEntity);
 
-        studentResponseDto.setSuccess(true);
+//        studentResponseDto.setSuccess(true);
 
         log.info("create student profile finished");
-        return studentResponseDto;
+        return UserMapper.INSTANCE.studentToStudentDto(student);
     }
 
     /**
@@ -253,7 +255,7 @@ public class StudentServiceImpl implements StudentService {
             dto.setEmail(student.getUserEntity().getEmail());
             dto.setFirstName(student.getUserEntity().getFirstName());
             dto.setLastName(student.getUserEntity().getLastName());
-            dto.setUserId(student.getUserEntity().getAccountId());
+            dto.setAccountId(student.getUserEntity().getAccountId());
         }
 
         return dto;
