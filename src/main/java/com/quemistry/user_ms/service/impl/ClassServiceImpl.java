@@ -52,19 +52,7 @@ public class ClassServiceImpl implements ClassService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "tutor not found" );
         }
         tutors.add(tutorOptional.get());
-
-
-//        request.getTutorEmails().forEach(
-//                e -> {
-//                    tutorOptional = tutorRepository.findTutorByUserEntityEmail(e);
-//                    if (!tutorOptional.isPresent()){
-//
-//                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("tutor with email=%s not found", e));
-//                    }
-//                    tutors.add(tutorOptional.get());
-//
-//                }
-//        );
+        tutors.addAll(getTutorsByEmails(request.getTutorEmails()));
         var classResponseDto = new ClassResponseDto();
 
         var classEntity = new Class();
@@ -103,22 +91,10 @@ public class ClassServiceImpl implements ClassService {
         existingClass.setEducationLevel(input.getEducationLevel());
         existingClass.setSubject(input.getSubject());
         existingClass.setModified(input.getUserId());
-
-        //TODO: uncomment below when email encryption is updated
-
-//        request.getTutorEmails().forEach(
-//                e -> {
-//                    tutorOptional = tutorRepository.findTutorByUserEntityEmail(e);
-//                    if (!tutorOptional.isPresent()){
-//
-//                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("tutor with email=%s not found", e));
-//                    }
-//                    tutors.add(tutorOptional.get());
-//
-//                }
-//        );
-//        existingClass.setTutors(tutors.stream().toList());
-        this.classRepository.save(existingClass);
+        tutors.addAll(getTutorsByEmails(input.getTutorEmails()));
+        existingClass.getTutors().clear();
+        existingClass.getTutors().addAll(tutors);
+        classRepository.save(existingClass);
 
         classResponseDto.setSuccess(true);
 
@@ -148,6 +124,18 @@ public class ClassServiceImpl implements ClassService {
         classDto.setClassInvitations(classInvitationDtos);
         classDto.setTutorEmails(clazz.getTutors().stream().map(Tutor::getUserEntity).map(User::getEmail).collect(Collectors.toList()));
         return classDto;
+    }
+
+    public List<Tutor> getTutorsByEmails(List<String> emails) {
+        List<Tutor> tutors = new ArrayList<>();
+        for (String email : emails) {
+            Optional<Tutor> tutorOptional = tutorRepository.findTutorByUserEntityEmail(email);
+            if (!tutorOptional.isPresent()){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("tutor with email=%s not found", email));
+            }
+            tutors.add(tutorOptional.get());
+        }
+        return tutors;
     }
 
 
