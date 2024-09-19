@@ -341,7 +341,7 @@ class StudentServiceImplTest {
 
         // Verify the exception message and status
         assertEquals(HttpStatus.NOT_FOUND, thrown.getStatusCode());
-        assertEquals(String.format("student not found for student email=%s,  tutor email=%s", studentEmail, tutorEmail), thrown.getReason());
+        assertEquals(String.format("student not found for student email=%s, tutor email=%s", studentEmail, tutorEmail), thrown.getReason());
 
         // Verify the repository method was called once with correct parameters
         verify(studentRepository, times(1)).findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);

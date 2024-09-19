@@ -10,7 +10,7 @@ public interface ClassService {
 
     ClassResponseDto saveClass(SaveClassRequest request);
 
-    ClassResponseDto updateClass(ClassDto input);
+    ClassDto updateClass(ClassDto input);
 
     List<ClassDto> getAllClasses(String userAccountId);
 

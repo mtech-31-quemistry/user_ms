@@ -63,6 +63,8 @@ class ClassServiceImplTest {
         clazz.setSubject("subject");
         clazz.setStatus("status");
         clazz.setEducationLevel("educationLevel");
+        when(classRepository.save(any(Class.class))).thenReturn(clazz);
+
     }
 
     @Test
@@ -93,7 +95,7 @@ class ClassServiceImplTest {
     @Test
     void givenClass_AbleToUpdateClass() {
         when(classRepository.findById(anyLong())).thenReturn(Optional.of(clazz));
-        Assertions.assertNotNull(this.classService.updateClass(classDto));
+        Assertions.assertNotNull(classService.updateClass(classDto));
     }
 
     @Test

@@ -27,6 +27,12 @@ public class ClassDto {
 
     private String userId;
 
+    private String status;
+
+    private OffsetDateTime startDate;
+
+    private OffsetDateTime endDate;
+
     private List<ClassInvitationDto> classInvitations = new ArrayList<>();
 
     private List<String> tutorEmails = new ArrayList<>();
@@ -35,9 +41,5 @@ public class ClassDto {
 
     private List<StudentDto> students = new ArrayList<>();
 
-    private OffsetDateTime startDate;
 
-    private OffsetDateTime endDate;
-
-    private String status;
 }

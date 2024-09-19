@@ -1,7 +1,7 @@
 package com.quemistry.user_ms.service.impl;
 
 import com.quemistry.user_ms.mapper.ClassInvitationMapper;
-import com.quemistry.user_ms.mapper.ClassesMapper;
+import com.quemistry.user_ms.mapper.ClassMapper;
 import com.quemistry.user_ms.model.ClassDto;
 import com.quemistry.user_ms.model.ClassInvitationDto;
 import com.quemistry.user_ms.model.SaveClassRequest;
@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @Service
 public class ClassServiceImpl implements ClassService {
 
-    private static final ClassesMapper CLASSES_MAPPER = ClassesMapper.INSTANCE;
     private final ClassRepository classRepository;
     private final ClassInvitationRepository classInvitationRepository;
     private final TutorRepository tutorRepository;
@@ -57,6 +56,7 @@ public class ClassServiceImpl implements ClassService {
 
         var classEntity = new Class();
         var now = OffsetDateTime.now();
+        classEntity.setStatus("active");
         classEntity.setCode(request.getCode());
         classEntity.setDescription(request.getDescription());
         classEntity.setEducationLevel(request.getEducationLevel());
@@ -73,7 +73,7 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public ClassResponseDto updateClass(ClassDto input) {
+    public ClassDto updateClass(ClassDto input) {
         log.info("update class started");
         log.info("update class -> user id: {} and class id: {}", input.getUserId(), input.getId());
 
@@ -81,31 +81,28 @@ public class ClassServiceImpl implements ClassService {
 
         if (classOptional.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("class with id=%s not found", input.getId()));
-        HashSet<Tutor> tutors = new HashSet<>();
 
-
-        var classResponseDto = new ClassResponseDto();
-        var existingClass = classOptional.get();
+        Class existingClass = classOptional.get();
         existingClass.setCode(input.getCode());
         existingClass.setDescription(input.getDescription());
         existingClass.setEducationLevel(input.getEducationLevel());
         existingClass.setSubject(input.getSubject());
         existingClass.setModified(input.getUserId());
-        tutors.addAll(getTutorsByEmails(input.getTutorEmails()));
-        existingClass.getTutors().clear();
-        existingClass.getTutors().addAll(tutors);
-        classRepository.save(existingClass);
-
-        classResponseDto.setSuccess(true);
-
-        log.info("update class ended");
-
-        return classResponseDto;
+        existingClass.setStatus(input.getStatus());
+        if(input.getTutorEmails().isEmpty()) {
+            HashSet<Tutor> tutors = new HashSet<>();
+            tutors.addAll(getTutorsByEmails(input.getTutorEmails()));
+            existingClass.getTutors().clear();
+            existingClass.getTutors().addAll(tutors);
+        }
+        Class clazz = classRepository.save(existingClass);
+        ClassDto classDto = ClassMapper.INSTANCE.classToClassDto(clazz);
+        return classDto;
     }
 
     @Override
     public List<ClassDto> getAllClasses(String userAccountId) {
-        return CLASSES_MAPPER.classesToClassesDto(this.classRepository.findAllByTutorId(userAccountId));
+        return  ClassMapper.INSTANCE.classesToClassesDto(this.classRepository.findAllByTutorId(userAccountId));
     }
 
     @Override
@@ -118,7 +115,7 @@ public class ClassServiceImpl implements ClassService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
         }
         Class clazz = classOptional.get();
-        ClassDto classDto = CLASSES_MAPPER.classToClassDto(clazz);
+        ClassDto classDto =  ClassMapper.INSTANCE.classToClassDto(clazz);
         List<ClassInvitation> classInvitations = classInvitationRepository.findByClassId(classId);
         List<ClassInvitationDto> classInvitationDtos = ClassInvitationMapper.INSTANCE.classInvitationsToClassInvitationDto(classInvitations);
         classDto.setClassInvitations(classInvitationDtos);

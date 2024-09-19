@@ -9,7 +9,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {ClassesMapper.class})
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {ClassMapper.class})
 public interface ClassInvitationMapper {
     ClassInvitationMapper INSTANCE = Mappers.getMapper(ClassInvitationMapper.class);
 

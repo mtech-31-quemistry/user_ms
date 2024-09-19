@@ -269,11 +269,10 @@ public class StudentServiceImpl implements StudentService {
     public StudentDto searchStudentProfile(String studentEmail, String tutorEmail) {
         Optional<Student> optionalStudent = this.studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);
         if (optionalStudent.isEmpty()) {
-            String message = String.format("student not found for student email=%s,  tutor email=%s", studentEmail, tutorEmail);
+            String message = String.format("student not found for student email=%s, tutor email=%s", studentEmail, tutorEmail);
             log.error(message);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
         }
-        log.info("ernest student {}", optionalStudent.get());
         return UserMapper.INSTANCE.studentToStudentDto(optionalStudent.get());
     }
 }

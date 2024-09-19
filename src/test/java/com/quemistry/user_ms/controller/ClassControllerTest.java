@@ -7,6 +7,7 @@ import com.quemistry.user_ms.service.ClassService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -36,12 +37,16 @@ class ClassControllerTest {
     @MockBean
     private ClassService classService;
 
+    @Mock
+    private ClassDto classDto;
+
     @BeforeEach
     void init() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new ClassController(classService))
                 .setControllerAdvice(new BaseController())
                 .build();
+
     }
 
     @DisplayName("Should return status 200 when try to save class")
@@ -76,7 +81,7 @@ class ClassControllerTest {
         String expectedStatusCode = "00";
         boolean expectedSuccessFlag = true;
 
-        when(classService.updateClass(any())).thenReturn(setClassResponseDtoMock(true));
+        when(classService.updateClass(any())).thenReturn(classDto);
 
         mockMvc.perform(put("/v1/class")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -91,8 +96,7 @@ class ClassControllerTest {
                                  }"""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.statusCode").value(expectedStatusCode))
-                .andExpect(jsonPath("$.payload.success").value(expectedSuccessFlag));
+                .andExpect(jsonPath("$.statusCode").value(expectedStatusCode));
 
         verify(classService, times(1)).updateClass(any());
     }

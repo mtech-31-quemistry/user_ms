@@ -11,8 +11,8 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {UserMapper.class} )
-public interface ClassesMapper {
-    ClassesMapper INSTANCE = Mappers.getMapper(ClassesMapper.class);
+public interface ClassMapper {
+    ClassMapper INSTANCE = Mappers.getMapper(ClassMapper.class);
 
     List<ClassDto> classesToClassesDto(List<Class> classes);
 
