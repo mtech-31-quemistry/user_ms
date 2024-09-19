@@ -16,7 +16,7 @@ public class ClassInvitationDto {
 
     private String code;
 
-    private ClassDto classEntity;
+//    private ClassDto classEntity;
 
     private int userType;
 
