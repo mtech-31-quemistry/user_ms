@@ -12,7 +12,7 @@ public interface ClassService {
 
     ClassResponseDto updateClass(ClassDto input);
 
-    List<ClassDto> getAllClasses();
+    List<ClassDto> getAllClasses(String userAccountId);
 
     ClassDto getClassWithInvitations(Long classId, String tutorId);
 }
