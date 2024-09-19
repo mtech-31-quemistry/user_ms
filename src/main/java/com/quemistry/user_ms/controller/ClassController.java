@@ -86,7 +86,7 @@ public class ClassController extends BaseController {
                 controllerName,
                 functionName,
                 "The request has been completed.",
-                this.classService.getAllClasses()
+                this.classService.getAllClasses(userId)
         );
         return ResponseEntity.ok(responseDto);
     }

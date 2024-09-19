@@ -16,6 +16,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +52,12 @@ public class Class extends Base {
             inverseJoinColumns = @JoinColumn(name = "tutor_id")
     )
     private List<Tutor> tutors = new ArrayList<>();
+
+    @Column(name = "class_start_ts")
+    private OffsetDateTime startDate;
+
+    @Column(name = "class_end_ts")
+    private OffsetDateTime endDate;
 
     @ManyToMany
     @JoinTable(

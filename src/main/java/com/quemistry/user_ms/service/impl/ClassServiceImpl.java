@@ -48,8 +48,8 @@ public class ClassServiceImpl implements ClassService {
         HashSet<Tutor> tutors = new HashSet<>();
         Optional<Tutor> tutorOptional = tutorRepository.findTutorByUserEntityAccountId(request.getUserId());
 
-        if (!tutorOptional.isPresent()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "tutor not found" );
+        if (tutorOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "tutor not found");
         }
         tutors.add(tutorOptional.get());
         tutors.addAll(getTutorsByEmails(request.getTutorEmails()));
@@ -75,12 +75,12 @@ public class ClassServiceImpl implements ClassService {
     @Override
     public ClassResponseDto updateClass(ClassDto input) {
         log.info("update class started");
-        log.info("update class -> user id: {}", input.getUserId());
+        log.info("update class -> user id: {} and class id: {}", input.getUserId(), input.getId());
 
         var classOptional = this.classRepository.findById(input.getId());
 
         if (classOptional.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("class with id=%s not found",input.getId()));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("class with id=%s not found", input.getId()));
         HashSet<Tutor> tutors = new HashSet<>();
 
 
@@ -104,16 +104,16 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public List<ClassDto> getAllClasses() {
-        return CLASSES_MAPPER.classesToClassesDto(this.classRepository.findAll());
+    public List<ClassDto> getAllClasses(String userAccountId) {
+        return CLASSES_MAPPER.classesToClassesDto(this.classRepository.findAllByTutorId(userAccountId));
     }
 
     @Override
     public ClassDto getClassWithInvitations(Long classId, String tutorAccountId) {
 //        Optional<Class> classOptional = classRepository.findById(classId);
         Optional<Class> classOptional = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
-        if (!classOptional.isPresent()){
-            String message = String.format("class not found for classId=%s and tutorAccountId=%s",classId,tutorAccountId);
+        if (!classOptional.isPresent()) {
+            String message = String.format("class not found for classId=%s and tutorAccountId=%s", classId, tutorAccountId);
             log.error(message);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
         }
@@ -130,7 +130,7 @@ public class ClassServiceImpl implements ClassService {
         List<Tutor> tutors = new ArrayList<>();
         for (String email : emails) {
             Optional<Tutor> tutorOptional = tutorRepository.findTutorByUserEntityEmail(email);
-            if (!tutorOptional.isPresent()){
+            if (tutorOptional.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("tutor with email=%s not found", email));
             }
             tutors.add(tutorOptional.get());
