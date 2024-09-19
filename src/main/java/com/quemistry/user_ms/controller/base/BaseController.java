@@ -75,23 +75,23 @@ public class BaseController {
         return responseDto;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseDto handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-
-        var errors = new ArrayList<ErrorDto>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.add(new ErrorDto(fieldName, errorMessage));
-        });
-
-        ResponseDto responseDto = new ResponseDto();
-        responseDto.getErrors().addAll(errors);
-        responseDto.setStatusCode(UserConstant.STATUS_CODE_VALIDATION_ERROR);
-        responseDto.setStatusMessage("Fail to validate the request");
-
-        return responseDto;
-    }
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseDto handleValidationExceptions(
+//            MethodArgumentNotValidException ex) {
+//
+//        var errors = new ArrayList<ErrorDto>();
+//        ex.getBindingResult().getAllErrors().forEach((error) -> {
+//            String fieldName = ((FieldError) error).getField();
+//            String errorMessage = error.getDefaultMessage();
+//            errors.add(new ErrorDto(fieldName, errorMessage));
+//        });
+//
+//        ResponseDto responseDto = new ResponseDto();
+//        responseDto.getErrors().addAll(errors);
+//        responseDto.setStatusCode(UserConstant.STATUS_CODE_VALIDATION_ERROR);
+//        responseDto.setStatusMessage("Fail to validate the request");
+//
+//        return responseDto;
+//    }
 }

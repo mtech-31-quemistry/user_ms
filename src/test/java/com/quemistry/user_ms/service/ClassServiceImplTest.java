@@ -44,9 +44,11 @@ class ClassServiceImplTest {
     @Mock
     TutorRepository tutorRepository;
 
-    ClassDto classDto;
+    private Class clazz;
 
-    SaveClassRequest saveClassRequest;
+    private ClassDto classDto;
+
+    private SaveClassRequest saveClassRequest;
 
     @BeforeEach
     void setUp() {
@@ -55,6 +57,11 @@ class ClassServiceImplTest {
         classDto.setId(1L);
         saveClassRequest = new SaveClassRequest();
         MockitoAnnotations.openMocks(this);
+        clazz = new Class(1L, "code", "description", "subject", "status", "eudcation",
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList());
+
     }
 
 //    @Test
@@ -89,9 +96,7 @@ class ClassServiceImplTest {
 
     @Test
     void givenClass_AbleToUpdateClass() {
-        var existingClass = new Class(1L, "code", "description", "subject", "status", "eudcation",  Collections.emptyList(), Collections.emptyList());
-
-        when(classRepository.findById(anyLong())).thenReturn(Optional.of(existingClass));
+        when(classRepository.findById(anyLong())).thenReturn(Optional.of(clazz));
         Assertions.assertNotNull(this.classService.updateClass(classDto));
     }
 

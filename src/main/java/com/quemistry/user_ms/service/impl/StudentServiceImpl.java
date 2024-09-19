@@ -7,10 +7,17 @@ import com.quemistry.user_ms.mapper.UserMapper;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.StudentProfileRequest;
-import com.quemistry.user_ms.model.response.StudentResponseDto;
-import com.quemistry.user_ms.repository.*;
+import com.quemistry.user_ms.repository.ClassInvitationRepository;
+import com.quemistry.user_ms.repository.ClassRepository;
+import com.quemistry.user_ms.repository.StudentClassRepository;
+import com.quemistry.user_ms.repository.StudentRepository;
+import com.quemistry.user_ms.repository.TutorRepository;
+import com.quemistry.user_ms.repository.UserRepository;
 import com.quemistry.user_ms.repository.entity.Class;
-import com.quemistry.user_ms.repository.entity.*;
+import com.quemistry.user_ms.repository.entity.ClassInvitation;
+import com.quemistry.user_ms.repository.entity.Student;
+import com.quemistry.user_ms.repository.entity.StudentClass;
+import com.quemistry.user_ms.repository.entity.User;
 import com.quemistry.user_ms.service.CryptoService;
 import com.quemistry.user_ms.service.NotificationService;
 import com.quemistry.user_ms.service.StudentService;
@@ -80,8 +87,6 @@ public class StudentServiceImpl implements StudentService {
         log.info("update student profile started");
         log.info("update student profile -> user id: {}", studentProfileRequest.getUserId());
 
-        var studentResponseDto = new StudentResponseDto();
-
         var userOptional = this.userRepository.findUserEntityByAccountId(studentProfileRequest.getUserId());
 
         if (userOptional.isPresent()) {
@@ -100,7 +105,6 @@ public class StudentServiceImpl implements StudentService {
             existingStudent.setModifiedOn(OffsetDateTime.now());
             Student student = this.studentRepository.save(existingStudent);
 
-//            studentResponseDto.setSuccess(true);
             log.info("update student profile finished");
 
             return UserMapper.INSTANCE.studentToStudentDto(student);
@@ -258,6 +262,21 @@ public class StudentServiceImpl implements StudentService {
             dto.setAccountId(student.getUserEntity().getAccountId());
         }
 
+        return dto;
+    }
+
+    @Override
+    public StudentDto searchStudentProfile(String studentEmail, String tutorEmail) {
+        StudentDto dto = new StudentDto();
+        Optional<Student> optionalStudent = this.studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);
+        if (optionalStudent.isPresent()) {
+            Student student = optionalStudent.get();
+            dto.setEducationLevel(student.getEducationLevel());
+            dto.setEmail(student.getUserEntity().getEmail());
+            dto.setFirstName(student.getUserEntity().getFirstName());
+            dto.setLastName(student.getUserEntity().getLastName());
+            dto.setAccountId(student.getUserEntity().getAccountId());
+        }
         return dto;
     }
 }

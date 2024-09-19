@@ -4,6 +4,7 @@ package com.quemistry.user_ms.mapper;
 import com.quemistry.user_ms.model.ClassDto;
 import com.quemistry.user_ms.repository.entity.Class;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
@@ -15,5 +16,6 @@ public interface ClassesMapper {
 
     List<ClassDto> classesToClassesDto(List<Class> classes);
 
+    @Mapping(target = "userId", ignore = true)
     ClassDto classToClassDto(Class clazz);
 }

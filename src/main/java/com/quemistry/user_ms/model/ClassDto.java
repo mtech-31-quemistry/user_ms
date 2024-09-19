@@ -28,7 +28,5 @@ public class ClassDto {
 
     private List<ClassInvitationDto> classInvitations = new ArrayList<>();
 
-    private List<String> tutorAccountIds = new ArrayList<>();
-
     private List<String> tutorEmails = new ArrayList<>();
 }

@@ -3,7 +3,7 @@ package com.quemistry.user_ms.controller;
 import ch.qos.logback.core.util.StringUtil;
 import com.quemistry.user_ms.controller.base.BaseController;
 import com.quemistry.user_ms.model.AcceptInvitationDto;
-import com.quemistry.user_ms.model.StudentDto;
+import com.quemistry.user_ms.model.SearchStudentRequest;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.StudentProfileRequest;
 import com.quemistry.user_ms.model.base.ResponseDto;
@@ -12,7 +12,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_EMAIL;
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
@@ -127,5 +133,16 @@ public class StudentController extends BaseController {
         } catch (Exception ex) {
             return prepareException(controllerName, functionName, ex);
         }
+    }
+
+    // API for tutor
+    @PostMapping("/search")
+    public ResponseEntity<ResponseDto> searchStudent(
+            @NotBlank @RequestHeader(value = HEADER_KEY_USER_EMAIL) String tutorEmail,
+            @NotBlank @RequestHeader(value = HEADER_KEY_USER_ID) String tutorAccountId,
+            @Validated @RequestBody SearchStudentRequest searchStudentRequest) {
+            return ResponseEntity.ok(ResponseDto.builder()
+                    .payload(studentService.searchStudentProfile(searchStudentRequest.getEmail(), tutorEmail))
+                    .build());
     }
 }

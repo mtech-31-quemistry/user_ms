@@ -3,6 +3,7 @@ package com.quemistry.user_ms.repository;
 import com.quemistry.user_ms.repository.entity.Student;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -14,4 +15,13 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     Optional<Student> findStudentByUserEntityAccountId(String accountId);
 
     Optional<Student> findStudentByUserEntityEmail(String email);
+
+    @Query("SELECT s FROM Student s JOIN s.userEntity u " +
+            "JOIN s.classes c " +
+            "JOIN c.tutors t " +
+            "JOIN t.userEntity u2 " +
+            "WHERE u.email = :studentEmail " +
+            "AND u2.email = :tutorEmail")
+    Optional<Student> findStudentByEmailAndTutorEmail(String studentEmail, String tutorEmail);
+
 }

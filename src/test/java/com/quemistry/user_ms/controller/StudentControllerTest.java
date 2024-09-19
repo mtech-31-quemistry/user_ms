@@ -1,8 +1,8 @@
 package com.quemistry.user_ms.controller;
 
 import com.quemistry.user_ms.model.AcceptInvitationDto;
+import com.quemistry.user_ms.model.SearchStudentRequest;
 import com.quemistry.user_ms.model.StudentDto;
-import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_EMAIL;
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
@@ -29,6 +30,8 @@ class StudentControllerTest {
 
     @MockBean
     private StudentService studentService;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     String studentEmail = "student@example.com";
     String studentAccountId = "12345";
@@ -343,6 +346,37 @@ class StudentControllerTest {
 
     private StudentDto getStudentDtoMock() {
         return new StudentDto();
+    }
+
+    @Test
+    void testSearchStudent_Success() throws Exception {
+        // Given
+        String tutorEmail = "tutor@example.com";
+        String tutorAccountId = "12345";
+        String studentEmail = "student@example.com";
+        SearchStudentRequest searchStudentRequest = new SearchStudentRequest(studentEmail);
+
+        // Mock the service to return a profile payload
+        StudentDto studentProfile = new StudentDto();
+        studentProfile.setEmail(studentEmail);
+        studentProfile.setFirstName("John");
+        studentProfile.setLastName("Doe");
+
+        when(studentService.searchStudentProfile(studentEmail, tutorEmail)).thenReturn(studentProfile);
+
+        // Perform the HTTP POST request
+        mockMvc.perform(post("/v1/student/search")
+                        .header(HEADER_KEY_USER_EMAIL, tutorEmail)  // Mock headers
+                        .header(HEADER_KEY_USER_ID, tutorAccountId)  // Mock headers
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(searchStudentRequest)))
+                .andExpect(status().isOk())  // Check if the response status is 200 OK
+                .andExpect(jsonPath("$.payload.email").value(studentEmail))  // Verify the response payload
+                .andExpect(jsonPath("$.payload.firstName").value("John"))  // Check payload details
+                .andExpect(jsonPath("$.payload.lastName").value("Doe"));  // Check payload details
+
+        // Verify that the service method was called once with correct parameters
+        verify(studentService, times(1)).searchStudentProfile(studentEmail, tutorEmail);
     }
 
 }

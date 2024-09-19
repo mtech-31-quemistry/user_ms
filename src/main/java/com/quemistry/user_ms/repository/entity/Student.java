@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToOne;
@@ -17,6 +18,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -42,8 +46,8 @@ public class Student extends Base {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User userEntity;
 
-//    @ManyToMany(mappedBy = "students")
-//    private List<Class> classes = new ArrayList<>();
+    @ManyToMany(mappedBy = "students")
+    private List<Class> classes = new ArrayList<>();
 
     public Student(String accountId, String email) {
         this.userEntity = new User();

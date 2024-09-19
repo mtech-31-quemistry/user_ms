@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,6 +67,8 @@ class StudentServiceImplTest {
 
     private StudentProfileRequest studentProfileRequest;
     private StudentInvitationDto invitationDto;
+    private Student student;
+    private Class clazz;
 
     @BeforeEach
     void setUp() {
@@ -78,6 +81,12 @@ class StudentServiceImplTest {
         studentProfileRequest.setEmail("john.doe@example.com");
         studentProfileRequest.setEducationLevel("COLLEGE");
         when(studentRepository.save(any(Student.class))).thenReturn(new Student());
+        student = new Student(2L, "P1", null, Collections.emptyList());
+        clazz = new Class(1L, "test", "test2", "test3", "test4", null,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList());
+
     }
 
     @Test
@@ -91,8 +100,6 @@ class StudentServiceImplTest {
 
     @Test
     void givenStudent_whenUpdateStudentProfile_thenReturnSuccess() {
-        var studentEntity = new Student(2L, "P1", null);
-
         var userEntity = new User(
                 1L,
                 "user-id",
@@ -102,7 +109,7 @@ class StudentServiceImplTest {
 
 
         when(userRepository.findUserEntityByAccountId(any())).thenReturn(Optional.of(userEntity));
-        when(studentRepository.findStudentEntityByUserEntityId(any())).thenReturn(studentEntity);
+        when(studentRepository.findStudentEntityByUserEntityId(any())).thenReturn(student);
 
         StudentDto studentDto = this.studentService.updateStudentProfile(studentProfileRequest);
 
@@ -144,10 +151,9 @@ class StudentServiceImplTest {
         );
 
         var tutorEntity = new Tutor(2L, "P1", "centre", userEntity, Collections.emptyList());
-        var classEntity = new Class(1L, "test", "test2", "test3", "test4", null, Collections.emptyList(), Collections.emptyList());
 
         when(tutorRepository.findTutorByUserEntityAccountId(anyString())).thenReturn(Optional.of(tutorEntity));
-        when(classRepository.findByCode(any())).thenReturn(Optional.of(classEntity));
+        when(classRepository.findByCode(any())).thenReturn(Optional.of(clazz));
         when(notificationService.sendEmailNotification(anyString(), anyString(), any())).thenReturn(true);
         when(cryptoService.encrypt(anyString())).thenReturn("test");
 
@@ -274,6 +280,62 @@ class StudentServiceImplTest {
         assertTrue(result);  // Assuming the new user will be created in this case
         verify(studentRepository).save(any(Student.class));
         verify(studentClassRepository).save(any(StudentClass.class));
+    }
+
+    @Test
+    void testSearchStudentProfile_StudentFound() {
+        // Arrange
+        String studentEmail = "student@example.com";
+        String tutorEmail = "tutor@example.com";
+
+        // Mock the student entity and related objects
+        User userEntity = new User();
+        userEntity.setEmail(studentEmail);
+        userEntity.setFirstName("John");
+        userEntity.setLastName("Doe");
+        userEntity.setAccountId("12345");
+
+        Student student = new Student();
+        student.setUserEntity(userEntity);
+        student.setEducationLevel("High School");
+
+        // Mock the repository behavior to return the student
+        when(studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail))
+                .thenReturn(Optional.of(student));
+
+        // Act
+        StudentDto result = studentService.searchStudentProfile(studentEmail, tutorEmail);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("High School", result.getEducationLevel());
+        assertEquals(studentEmail, result.getEmail());
+        assertEquals("John", result.getFirstName());
+        assertEquals("Doe", result.getLastName());
+        assertEquals("12345", result.getAccountId());
+
+        // Verify the repository method was called once with correct parameters
+        verify(studentRepository, times(1)).findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);
+    }
+
+    @Test
+    void testSearchStudentProfile_StudentNotFound() {
+        // Arrange
+        String studentEmail = "student@example.com";
+        String tutorEmail = "tutor@example.com";
+
+        // Mock the repository behavior to return an empty Optional
+        when(studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail))
+                .thenReturn(Optional.empty());
+
+        // Act
+        StudentDto result = studentService.searchStudentProfile(studentEmail, tutorEmail);
+
+        // Assert
+        assertNotNull(result); // The DTO should not be null
+
+        // Verify the repository method was called once with correct parameters
+        verify(studentRepository, times(1)).findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);
     }
 
 }
