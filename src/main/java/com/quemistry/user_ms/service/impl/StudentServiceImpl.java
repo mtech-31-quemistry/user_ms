@@ -267,16 +267,13 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDto searchStudentProfile(String studentEmail, String tutorEmail) {
-        StudentDto dto = new StudentDto();
         Optional<Student> optionalStudent = this.studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);
-        if (optionalStudent.isPresent()) {
-            Student student = optionalStudent.get();
-            dto.setEducationLevel(student.getEducationLevel());
-            dto.setEmail(student.getUserEntity().getEmail());
-            dto.setFirstName(student.getUserEntity().getFirstName());
-            dto.setLastName(student.getUserEntity().getLastName());
-            dto.setAccountId(student.getUserEntity().getAccountId());
+        if (optionalStudent.isEmpty()) {
+            String message = String.format("student not found for student email=%s,  tutor email=%s", studentEmail, tutorEmail);
+            log.error(message);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
         }
-        return dto;
+        log.info("ernest student {}", optionalStudent.get());
+        return UserMapper.INSTANCE.studentToStudentDto(optionalStudent.get());
     }
 }

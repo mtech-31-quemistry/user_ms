@@ -26,8 +26,6 @@ public class SaveClassRequest {
 
     private String userId;
 
-    private List<ClassInvitationDto> classInvitations = new ArrayList<>();
-
     private List<String> tutorAccountIds = new ArrayList<>();
 
     private List<String> tutorEmails = new ArrayList<>();

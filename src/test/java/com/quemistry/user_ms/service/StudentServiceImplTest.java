@@ -334,11 +334,14 @@ class StudentServiceImplTest {
         when(studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail))
                 .thenReturn(Optional.empty());
 
-        // Act
-        StudentDto result = studentService.searchStudentProfile(studentEmail, tutorEmail);
+        // Act and Assert
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            studentService.searchStudentProfile(studentEmail, tutorEmail);
+        });
 
-        // Assert
-        assertNotNull(result); // The DTO should not be null
+        // Verify the exception message and status
+        assertEquals(HttpStatus.NOT_FOUND, thrown.getStatusCode());
+        assertEquals(String.format("student not found for student email=%s,  tutor email=%s", studentEmail, tutorEmail), thrown.getReason());
 
         // Verify the repository method was called once with correct parameters
         verify(studentRepository, times(1)).findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);

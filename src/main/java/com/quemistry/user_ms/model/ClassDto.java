@@ -31,6 +31,10 @@ public class ClassDto {
 
     private List<String> tutorEmails = new ArrayList<>();
 
+    private List<TutorDto> tutors = new ArrayList<>();
+
+    private List<StudentDto> students = new ArrayList<>();
+
     private OffsetDateTime startDate;
 
     private OffsetDateTime endDate;

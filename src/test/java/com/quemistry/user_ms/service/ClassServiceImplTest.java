@@ -65,11 +65,6 @@ class ClassServiceImplTest {
         clazz.setEducationLevel("educationLevel");
     }
 
-//    @Test
-//    void givenClass_AbleToSaveClass() {
-//        this.classService.saveClass(saveClassRequest);
-//    }
-
     @Test
     void testSaveClassSuccess() {
         // Given
