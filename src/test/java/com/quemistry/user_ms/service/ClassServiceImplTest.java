@@ -19,11 +19,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -56,11 +56,13 @@ class ClassServiceImplTest {
         classDto.setId(1L);
         saveClassRequest = new SaveClassRequest();
         MockitoAnnotations.openMocks(this);
-        clazz = new Class(1L, "code", "description", "subject", "status", "eudcation",
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList());
-
+        clazz = new Class();
+        clazz.setId(1l);
+        clazz.setCode("code");
+        clazz.setDescription("description");
+        clazz.setSubject("subject");
+        clazz.setStatus("status");
+        clazz.setEducationLevel("educationLevel");
     }
 
 //    @Test

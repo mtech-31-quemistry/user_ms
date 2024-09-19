@@ -42,6 +42,12 @@ public class Class extends Base {
     @Column(name = "education_level")
     private String educationLevel;
 
+    @Column(name = "class_start_ts")
+    private OffsetDateTime startDate;
+
+    @Column(name = "class_end_ts")
+    private OffsetDateTime endDate;
+
     @OneToMany(mappedBy = "classEntity")
     private List<ClassInvitation> invitation = new ArrayList<>();
 
@@ -52,12 +58,6 @@ public class Class extends Base {
             inverseJoinColumns = @JoinColumn(name = "tutor_id")
     )
     private List<Tutor> tutors = new ArrayList<>();
-
-    @Column(name = "class_start_ts")
-    private OffsetDateTime startDate;
-
-    @Column(name = "class_end_ts")
-    private OffsetDateTime endDate;
 
     @ManyToMany
     @JoinTable(
