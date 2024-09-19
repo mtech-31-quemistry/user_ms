@@ -1,21 +1,13 @@
 package com.quemistry.user_ms.repository.entity;
 
 import com.quemistry.user_ms.repository.entity.base.Base;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +43,12 @@ public class Class extends Base {
             inverseJoinColumns = @JoinColumn(name = "tutor_id")
     )
     private List<Tutor> tutors = new ArrayList<>();
+
+    @Column(name = "class_start_ts")
+    private OffsetDateTime startDate;
+
+    @Column(name = "class_end_ts")
+    private OffsetDateTime endDate;
 
 //    @ManyToMany
 //    @JoinTable(

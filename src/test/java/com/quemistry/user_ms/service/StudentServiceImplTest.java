@@ -4,14 +4,9 @@ import com.quemistry.user_ms.constant.ClassInvitationStatus;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.StudentProfileRequest;
-import com.quemistry.user_ms.model.response.StudentResponseDto;
 import com.quemistry.user_ms.repository.*;
 import com.quemistry.user_ms.repository.entity.Class;
-import com.quemistry.user_ms.repository.entity.ClassInvitation;
-import com.quemistry.user_ms.repository.entity.Student;
-import com.quemistry.user_ms.repository.entity.StudentClass;
-import com.quemistry.user_ms.repository.entity.Tutor;
-import com.quemistry.user_ms.repository.entity.User;
+import com.quemistry.user_ms.repository.entity.*;
 import com.quemistry.user_ms.service.impl.StudentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,18 +16,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 class StudentServiceImplTest {
@@ -144,7 +135,7 @@ class StudentServiceImplTest {
         );
 
         var tutorEntity = new Tutor(2L, "P1", "centre", userEntity, Collections.emptyList());
-        var classEntity = new Class(1L, "test", "test2", "test3", "test4", null, Collections.emptyList(), Collections.emptyList());
+        var classEntity = new Class(1L, "test", "test2", "test3", "test4", null, Collections.emptyList(), Collections.emptyList(), OffsetDateTime.now(), OffsetDateTime.now());
 
         when(tutorRepository.findTutorByUserEntityAccountId(anyString())).thenReturn(Optional.of(tutorEntity));
         when(classRepository.findByCode(any())).thenReturn(Optional.of(classEntity));
