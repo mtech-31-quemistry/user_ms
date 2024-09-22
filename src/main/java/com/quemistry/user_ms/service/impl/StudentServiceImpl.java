@@ -33,6 +33,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import static com.quemistry.user_ms.constant.EmailConstant.STUDENT_INVITATION_TEMPLATE;
@@ -266,13 +267,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDto searchStudentProfile(String studentEmail, String tutorEmail) {
-        Optional<Student> optionalStudent = this.studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);
-        if (optionalStudent.isEmpty()) {
-            String message = String.format("student not found for student email=%s, tutor email=%s", studentEmail, tutorEmail);
+    public List<StudentDto> searchStudentProfile(List<String> studentEmails, List<String> studentAccountIds, String tutorEmail) {
+        List<Student> students = studentRepository.findStudentByEmailOrAccountId(studentEmails, studentAccountIds, tutorEmail);
+        if (students.isEmpty()) {
+            String message = String.format("student not found for emails=%s, accountIds=%s, tutorEmail=%s", studentEmails, studentAccountIds, tutorEmail);
             log.error(message);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
         }
-        return UserMapper.INSTANCE.studentToStudentDto(optionalStudent.get());
+        return UserMapper.INSTANCE.studentsToStudentDtos(students);
     }
 }

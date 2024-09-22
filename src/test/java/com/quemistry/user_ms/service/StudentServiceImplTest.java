@@ -25,7 +25,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,9 +35,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,6 +75,9 @@ class StudentServiceImplTest {
     private StudentInvitationDto invitationDto;
     private Student student;
     private Class clazz;
+    private List<String> studentEmails;
+    private List<String> studentAccountIds;
+    private String tutorEmail;
 
     @BeforeEach
     void setUp() {
@@ -93,6 +98,9 @@ class StudentServiceImplTest {
         clazz.setSubject("subject");
         clazz.setStatus("status");
         clazz.setEducationLevel("educationLevel");
+        studentEmails = Arrays.asList("student1@example.com", "student2@example.com");
+        studentAccountIds = Arrays.asList("account1", "account2");
+        tutorEmail = "tutor@example.com";
     }
 
     @Test
@@ -289,62 +297,36 @@ class StudentServiceImplTest {
     }
 
     @Test
-    void testSearchStudentProfile_StudentFound() {
-        // Arrange
-        String studentEmail = "student@example.com";
-        String tutorEmail = "tutor@example.com";
+    void testSearchStudentProfile_Success() {
+        // Mock student data
+        List<Student> students = Arrays.asList(new Student("student1@example.com", "account1"), new Student("student2@example.com", "account2"));
 
-        // Mock the student entity and related objects
-        User userEntity = new User();
-        userEntity.setEmail(studentEmail);
-        userEntity.setFirstName("John");
-        userEntity.setLastName("Doe");
-        userEntity.setAccountId("12345");
+        // Mock the repository call
+        when(studentRepository.findStudentByEmailOrAccountId(anyList(), anyList(), anyString()))
+                .thenReturn(students);
 
-        Student student = new Student();
-        student.setUserEntity(userEntity);
-        student.setEducationLevel("High School");
+        // Test the method
+        List<StudentDto> studentDtos = studentService.searchStudentProfile(studentEmails, studentAccountIds, tutorEmail);
 
-        // Mock the repository behavior to return the student
-        when(studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail))
-                .thenReturn(Optional.of(student));
-
-        // Act
-        StudentDto result = studentService.searchStudentProfile(studentEmail, tutorEmail);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("High School", result.getEducationLevel());
-        assertEquals(studentEmail, result.getEmail());
-        assertEquals("John", result.getFirstName());
-        assertEquals("Doe", result.getLastName());
-        assertEquals("12345", result.getAccountId());
-
-        // Verify the repository method was called once with correct parameters
-        verify(studentRepository, times(1)).findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);
+        // Assert the results
+        assertNotNull(studentDtos);
+        assertEquals(2, studentDtos.size());
     }
 
     @Test
-    void testSearchStudentProfile_StudentNotFound() {
-        // Arrange
-        String studentEmail = "student@example.com";
-        String tutorEmail = "tutor@example.com";
+    void testSearchStudentProfile_EmptyResult() {
+        // Mock the repository call to return an empty list
+        when(studentRepository.findStudentByEmailOrAccountId(anyList(), anyList(), anyString()))
+                .thenReturn(Arrays.asList());
 
-        // Mock the repository behavior to return an empty Optional
-        when(studentRepository.findStudentByEmailAndTutorEmail(studentEmail, tutorEmail))
-                .thenReturn(Optional.empty());
-
-        // Act and Assert
-        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
-            studentService.searchStudentProfile(studentEmail, tutorEmail);
+        // Test the method and expect a ResponseStatusException
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            studentService.searchStudentProfile(studentEmails, studentAccountIds, tutorEmail);
         });
 
-        // Verify the exception message and status
-        assertEquals(HttpStatus.NOT_FOUND, thrown.getStatusCode());
-        assertEquals(String.format("student not found for student email=%s, tutor email=%s", studentEmail, tutorEmail), thrown.getReason());
-
-        // Verify the repository method was called once with correct parameters
-        verify(studentRepository, times(1)).findStudentByEmailAndTutorEmail(studentEmail, tutorEmail);
+        // Assert the exception message and status
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertTrue(exception.getReason().contains("student not found"));
     }
 
 }

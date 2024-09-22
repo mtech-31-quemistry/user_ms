@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
@@ -20,8 +21,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             "JOIN s.classes c " +
             "JOIN c.tutors t " +
             "JOIN t.userEntity u2 " +
-            "WHERE u.email = :studentEmail " +
+            "WHERE (u.email IN :studentEmails " +
+            "OR u.accountId in :studentAccountIds) " +
             "AND u2.email = :tutorEmail")
-    Optional<Student> findStudentByEmailAndTutorEmail(String studentEmail, String tutorEmail);
+    List<Student> findStudentByEmailOrAccountId(List<String> studentEmails, List<String> studentAccountIds, String tutorEmail);
 
 }

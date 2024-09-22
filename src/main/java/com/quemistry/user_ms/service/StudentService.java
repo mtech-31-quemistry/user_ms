@@ -5,6 +5,7 @@ import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.StudentProfileRequest;
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.List;
 
 public interface StudentService {
 
@@ -16,5 +17,5 @@ public interface StudentService {
 
     StudentDto getStudentProfile(@NotBlank String studentEmail);
 
-    StudentDto searchStudentProfile(String studentEmail, String teacherEmail);
+    List<StudentDto> searchStudentProfile(List<String> studentEmails, List<String> studentAccountIds, String tutorEmail);
 }

@@ -142,7 +142,9 @@ public class StudentController extends BaseController {
             @NotBlank @RequestHeader(value = HEADER_KEY_USER_ID) String tutorAccountId,
             @Validated @RequestBody SearchStudentRequest searchStudentRequest) {
             return ResponseEntity.ok(ResponseDto.builder()
-                    .payload(studentService.searchStudentProfile(searchStudentRequest.getEmail(), tutorEmail))
+                    .payload(studentService.searchStudentProfile(searchStudentRequest.getEmails(),
+                            searchStudentRequest.getAccountIds(),
+                            tutorEmail))
                     .build());
     }
 }

@@ -10,6 +10,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
 
@@ -26,4 +28,6 @@ public interface UserMapper {
     @Mapping(source = "userEntity.email", target = "email")
     @Mapping(source = "userEntity.accountId", target = "accountId")
     StudentDto studentToStudentDto(Student student);
+
+    List<StudentDto> studentsToStudentDtos(List<Student> students);
 }

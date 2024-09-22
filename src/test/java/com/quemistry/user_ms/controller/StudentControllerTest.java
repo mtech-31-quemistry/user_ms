@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.List;
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_EMAIL;
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
 import static org.mockito.ArgumentMatchers.any;
@@ -354,7 +355,8 @@ class StudentControllerTest {
         String tutorEmail = "tutor@example.com";
         String tutorAccountId = "12345";
         String studentEmail = "student@example.com";
-        SearchStudentRequest searchStudentRequest = new SearchStudentRequest(studentEmail);
+        String studentAccountId = "studentAccountId";
+        SearchStudentRequest searchStudentRequest = new SearchStudentRequest(List.of(studentEmail), List.of(studentAccountId));
 
         // Mock the service to return a profile payload
         StudentDto studentProfile = new StudentDto();
@@ -362,7 +364,7 @@ class StudentControllerTest {
         studentProfile.setFirstName("John");
         studentProfile.setLastName("Doe");
 
-        when(studentService.searchStudentProfile(studentEmail, tutorEmail)).thenReturn(studentProfile);
+        when(studentService.searchStudentProfile(List.of(studentEmail), List.of(studentAccountId), tutorEmail)).thenReturn(List.of(studentProfile));
 
         // Perform the HTTP POST request
         mockMvc.perform(post("/v1/student/search")
@@ -371,12 +373,12 @@ class StudentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(searchStudentRequest)))
                 .andExpect(status().isOk())  // Check if the response status is 200 OK
-                .andExpect(jsonPath("$.payload.email").value(studentEmail))  // Verify the response payload
-                .andExpect(jsonPath("$.payload.firstName").value("John"))  // Check payload details
-                .andExpect(jsonPath("$.payload.lastName").value("Doe"));  // Check payload details
+                .andExpect(jsonPath("$.payload[0].email").value(studentEmail))  // Verify the response payload
+                .andExpect(jsonPath("$.payload[0].firstName").value("John"))  // Check payload details
+                .andExpect(jsonPath("$.payload[0].lastName").value("Doe"));  // Check payload details
 
         // Verify that the service method was called once with correct parameters
-        verify(studentService, times(1)).searchStudentProfile(studentEmail, tutorEmail);
+        verify(studentService, times(1)).searchStudentProfile(List.of(studentEmail), List.of(studentAccountId), tutorEmail);
     }
 
 }

@@ -8,9 +8,11 @@ import com.quemistry.user_ms.model.SaveClassRequest;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.repository.ClassInvitationRepository;
 import com.quemistry.user_ms.repository.ClassRepository;
+import com.quemistry.user_ms.repository.StudentRepository;
 import com.quemistry.user_ms.repository.TutorRepository;
 import com.quemistry.user_ms.repository.entity.Class;
 import com.quemistry.user_ms.repository.entity.ClassInvitation;
+import com.quemistry.user_ms.repository.entity.Student;
 import com.quemistry.user_ms.repository.entity.Tutor;
 import com.quemistry.user_ms.repository.entity.User;
 import com.quemistry.user_ms.service.ClassService;
@@ -33,11 +35,13 @@ public class ClassServiceImpl implements ClassService {
     private final ClassRepository classRepository;
     private final ClassInvitationRepository classInvitationRepository;
     private final TutorRepository tutorRepository;
+    private final StudentRepository studentRepository;
 
-    public ClassServiceImpl(ClassRepository classRepository, ClassInvitationRepository classInvitationRepository, TutorRepository tutorRepository) {
+    public ClassServiceImpl(ClassRepository classRepository, ClassInvitationRepository classInvitationRepository, TutorRepository tutorRepository, StudentRepository studentRepository) {
         this.classRepository = classRepository;
         this.classInvitationRepository = classInvitationRepository;
         this.tutorRepository = tutorRepository;
+        this.studentRepository = studentRepository;
     }
 
     @Override
@@ -120,6 +124,30 @@ public class ClassServiceImpl implements ClassService {
         classDto.setTutorEmails(clazz.getTutors().stream().map(Tutor::getUserEntity).map(User::getEmail).collect(Collectors.toList()));
         return classDto;
     }
+
+//    @Override
+//    public ClassDto removeStudentFromClass(Long classId, Long studentId, String tutorAccountId) {
+//        Optional<Class> optionalClass = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
+//        if (!optionalClass.isPresent()) {
+//            String message = String.format("class not found for classId=%s and tutorAccountId=%s", classId, tutorAccountId);
+//            log.error(message);
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+//        }
+//        Class clazz = optionalClass.get();
+//        Student student = clazz.getStudents().stream()
+//                .filter( s -> s.getId().equals(studentId))
+//                .findFirst()
+//                .orElseThrow(() -> {
+//                    String message = String.format("student not found for studentId=%s and classId=%s", studentId, classId);
+//                    log.error(message);
+//                    return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+//                });
+//        clazz.getStudents().remove(student);
+//        student.getClasses().remove(clazz);
+//        studentRepository.save(student);
+//        classRepository.save(clazz);
+//        return ClassMapper.INSTANCE.classToClassDto(clazz);
+//    }
 
     public List<Tutor> getTutorsByEmails(List<String> emails) {
         List<Tutor> tutors = new ArrayList<>();

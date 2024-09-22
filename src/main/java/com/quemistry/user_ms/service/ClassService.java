@@ -15,4 +15,6 @@ public interface ClassService {
     List<ClassDto> getAllClasses(String userAccountId);
 
     ClassDto getClassWithInvitations(Long classId, String tutorId);
+
+//    ClassDto removeStudentFromClass(Long classId, Long studentId, String tutorAccountId);
 }
