@@ -89,20 +89,18 @@ public class ClassServiceImpl implements ClassService {
         existingClass.setSubject(input.getSubject());
         existingClass.setModified(input.getUserId());
         existingClass.setStatus(input.getStatus());
-        if(input.getTutorEmails().isEmpty()) {
-            HashSet<Tutor> tutors = new HashSet<>();
-            tutors.addAll(getTutorsByEmails(input.getTutorEmails()));
+        if (!input.getTutorEmails().isEmpty()) {
+            HashSet<Tutor> tutors = new HashSet<>(getTutorsByEmails(input.getTutorEmails()));
             existingClass.getTutors().clear();
             existingClass.getTutors().addAll(tutors);
         }
         Class clazz = classRepository.save(existingClass);
-        ClassDto classDto = ClassMapper.INSTANCE.classToClassDto(clazz);
-        return classDto;
+        return ClassMapper.INSTANCE.classToClassDto(clazz);
     }
 
     @Override
     public List<ClassDto> getAllClasses(String userAccountId) {
-        return  ClassMapper.INSTANCE.classesToClassesDto(this.classRepository.findAllByTutorId(userAccountId));
+        return ClassMapper.INSTANCE.classesToClassesDto(this.classRepository.findAllByTutorId(userAccountId));
     }
 
     @Override
@@ -115,7 +113,7 @@ public class ClassServiceImpl implements ClassService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
         }
         Class clazz = classOptional.get();
-        ClassDto classDto =  ClassMapper.INSTANCE.classToClassDto(clazz);
+        ClassDto classDto = ClassMapper.INSTANCE.classToClassDto(clazz);
         List<ClassInvitation> classInvitations = classInvitationRepository.findByClassId(classId);
         List<ClassInvitationDto> classInvitationDtos = ClassInvitationMapper.INSTANCE.classInvitationsToClassInvitationDto(classInvitations);
         classDto.setClassInvitations(classInvitationDtos);
