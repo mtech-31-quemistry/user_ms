@@ -7,17 +7,9 @@ import com.quemistry.user_ms.mapper.UserMapper;
 import com.quemistry.user_ms.model.StudentDto;
 import com.quemistry.user_ms.model.StudentInvitationDto;
 import com.quemistry.user_ms.model.StudentProfileRequest;
-import com.quemistry.user_ms.repository.ClassInvitationRepository;
-import com.quemistry.user_ms.repository.ClassRepository;
-import com.quemistry.user_ms.repository.StudentClassRepository;
-import com.quemistry.user_ms.repository.StudentRepository;
-import com.quemistry.user_ms.repository.TutorRepository;
-import com.quemistry.user_ms.repository.UserRepository;
+import com.quemistry.user_ms.repository.*;
 import com.quemistry.user_ms.repository.entity.Class;
-import com.quemistry.user_ms.repository.entity.ClassInvitation;
-import com.quemistry.user_ms.repository.entity.Student;
-import com.quemistry.user_ms.repository.entity.StudentClass;
-import com.quemistry.user_ms.repository.entity.User;
+import com.quemistry.user_ms.repository.entity.*;
 import com.quemistry.user_ms.service.CryptoService;
 import com.quemistry.user_ms.service.NotificationService;
 import com.quemistry.user_ms.service.StudentService;
@@ -167,7 +159,7 @@ public class StudentServiceImpl implements StudentService {
 
         var classInvitation = new ClassInvitation();
         classInvitation.setClassEntity(classEntity);
-        classInvitation.setUserEmail(input.studentEmail());
+        classInvitation.setUserEmail(input.studentEmail().trim());
         classInvitation.setStatus(ClassInvitationStatus.INVITED);
         classInvitation.setUserType(UserConstant.USER_TYPE_STUDENT);
         classInvitation.setCode(StringHelper.getRandomString(10));
@@ -176,11 +168,11 @@ public class StudentServiceImpl implements StudentService {
         String encryptedClassCode = URLEncoder.encode(this.cryptoService.encrypt(classInvitation.getCode()), StandardCharsets.UTF_8);
 
         var templateItems = new HashMap<String, String>();
-        templateItems.put("%%student_name%%", input.studentFullName());
-        templateItems.put("%%class_room%%", classEntity.getDescription());
-        templateItems.put("%%tuition_center%%", tutor.getTuitionCentre());
+        templateItems.put("%%student_name%%", input.studentFullName().trim());
+        templateItems.put("%%class_room%%", classEntity.getDescription().trim());
+        templateItems.put("%%tuition_center%%", tutor.getTuitionCentre().trim());
         templateItems.put("%%invitation_url%%", "%s/students/invitation/accept?code=%s".formatted(this.frontendURL, encryptedClassCode));
-        templateItems.put("%%tutor_name%%", tutor.getUserEntity().getFullName());
+        templateItems.put("%%tutor_name%%", tutor.getUserEntity().getFullName().trim());
 
         boolean canSend = this.notificationService.sendEmailNotification(
                 input.studentEmail(),
