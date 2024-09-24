@@ -16,8 +16,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -42,11 +42,11 @@ public class Class extends Base {
     @Column(name = "education_level")
     private String educationLevel;
 
-    @Column(name = "class_start_ts")
-    private OffsetDateTime startDate;
+    @Column(name = "start_date")
+    private Date startDate;
 
-    @Column(name = "class_end_ts")
-    private OffsetDateTime endDate;
+    @Column(name = "end_date")
+    private Date endDate;
 
     @OneToMany(mappedBy = "classEntity")
     private List<ClassInvitation> invitation = new ArrayList<>();

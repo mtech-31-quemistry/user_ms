@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -25,6 +26,10 @@ public class SaveClassRequest {
     private String description;
 
     private String userId;
+
+    private Date startDate;
+
+    private Date endDate;
 
     private List<String> tutorAccountIds = new ArrayList<>();
 

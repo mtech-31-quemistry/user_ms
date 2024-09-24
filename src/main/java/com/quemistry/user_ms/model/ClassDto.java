@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -29,9 +29,9 @@ public class ClassDto {
 
     private String status;
 
-    private OffsetDateTime startDate;
+    private Date startDate;
 
-    private OffsetDateTime endDate;
+    private Date endDate;
 
     private List<ClassInvitationDto> classInvitations = new ArrayList<>();
 

@@ -67,6 +67,8 @@ public class ClassServiceImpl implements ClassService {
         classEntity.setSubject(request.getSubject());
         classEntity.setCreationAndModifiedDetails(now, request.getUserId());
         classEntity.setTutors(tutors.stream().toList());
+        classEntity.setStartDate(request.getStartDate());
+        classEntity.setEndDate(request.getEndDate());
         this.classRepository.save(classEntity);
 
         classResponseDto.setSuccess(true);
@@ -93,6 +95,8 @@ public class ClassServiceImpl implements ClassService {
         existingClass.setSubject(input.getSubject());
         existingClass.setModified(input.getUserId());
         existingClass.setStatus(input.getStatus());
+        existingClass.setStartDate(input.getStartDate());
+        existingClass.setEndDate(input.getEndDate());
         if (!input.getTutorEmails().isEmpty()) {
             HashSet<Tutor> tutors = new HashSet<>(getTutorsByEmails(input.getTutorEmails()));
             existingClass.getTutors().clear();
