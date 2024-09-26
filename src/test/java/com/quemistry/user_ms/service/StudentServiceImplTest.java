@@ -153,7 +153,7 @@ class StudentServiceImplTest {
         var inputStudentProfile = new StudentInvitationDto(
                 "first@first.com",
                 "full name",
-                "c001");
+                1L);
 
 
         var userEntity = new User(
@@ -167,7 +167,7 @@ class StudentServiceImplTest {
         var tutorEntity = new Tutor(2L, "P1", "centre", userEntity, Collections.emptyList());
 
         when(tutorRepository.findTutorByUserEntityAccountId(anyString())).thenReturn(Optional.of(tutorEntity));
-        when(classRepository.findByCode(any())).thenReturn(Optional.of(clazz));
+        when(classRepository.findById(any())).thenReturn(Optional.of(clazz));
         when(notificationService.sendEmailNotification(anyString(), anyString(), any())).thenReturn(true);
         when(cryptoService.encrypt(anyString())).thenReturn("test");
 
@@ -193,19 +193,19 @@ class StudentServiceImplTest {
     void testSendInvitation_ClassNotFound() {
         // Given
         String tutorAccountId = "tutor123";
-        String classCode = "class456";
-        StudentInvitationDto input = new StudentInvitationDto("John Doe", "student@example.com", classCode);
+        Long classId = 1L;
+        StudentInvitationDto input = new StudentInvitationDto("John Doe", "student@example.com", classId);
 
         Tutor tutor = new Tutor();
         when(tutorRepository.findTutorByUserEntityAccountId(tutorAccountId)).thenReturn(Optional.of(tutor));
-        when(classRepository.findByCode(classCode)).thenReturn(Optional.empty());
+        when(classRepository.findById(classId)).thenReturn(Optional.empty());
 
         // Act & Assert
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             studentService.sendInvitation(input, tutorAccountId);
         });
 
-        assertEquals("404 NOT_FOUND \"class code=class456 not found\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"class id=1 not found\"", exception.getMessage());
         verify(classInvitationRepository, never()).save(any(ClassInvitation.class));
     }
 

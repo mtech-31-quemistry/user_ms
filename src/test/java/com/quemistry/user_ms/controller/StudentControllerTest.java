@@ -295,7 +295,7 @@ class StudentControllerTest {
                                 {
                                       "studentEmail": "test@gmail.com",
                                       "studentFullName": "test",
-                                      "classCode": "test"
+                                      "classId": "1"
                                   }"""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

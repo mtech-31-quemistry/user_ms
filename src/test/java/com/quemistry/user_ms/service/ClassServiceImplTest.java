@@ -72,7 +72,7 @@ class ClassServiceImplTest {
         // Given
         SaveClassRequest request = new SaveClassRequest();
         request.setUserId("testUserId");
-        request.setCode("classCode");
+        request.setCode("classId");
         request.setDescription("classDescription");
         request.setEducationLevel("level");
         request.setSubject("subject");

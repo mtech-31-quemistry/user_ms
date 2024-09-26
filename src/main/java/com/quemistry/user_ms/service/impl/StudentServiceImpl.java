@@ -143,10 +143,10 @@ public class StudentServiceImpl implements StudentService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
 //            return false;
         }
-        Optional<Class> classOptional = classRepository.findByCode(input.classCode());
+        Optional<Class> classOptional = classRepository.findById(input.classId());
 
         if (classOptional.isEmpty()) {
-            message = "class code=%s not found".formatted(input.classCode());
+            message = "class id=%s not found".formatted(input.classId());
             log.error(message);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
 //            return false;
