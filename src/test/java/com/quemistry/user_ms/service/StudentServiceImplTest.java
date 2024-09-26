@@ -93,7 +93,6 @@ class StudentServiceImplTest {
         student = new Student(2L, "P1", null, Collections.emptyList());
         clazz = new Class();
         clazz.setId(1L);
-        clazz.setCode("code");
         clazz.setDescription("description");
         clazz.setSubject("subject");
         clazz.setStatus("status");

@@ -31,8 +31,6 @@ public class Class extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String code;
-
     private String description;
 
     private String subject;
@@ -71,7 +69,6 @@ public class Class extends Base {
     public String toString() {
         return "Class{" +
                 "id=" + id +
-                ", code='" + code + '\'' +
                 ", description='" + description + '\'' +
                 ", subject='" + subject + '\'' +
                 ", educationLevel='" + educationLevel + '\'' +

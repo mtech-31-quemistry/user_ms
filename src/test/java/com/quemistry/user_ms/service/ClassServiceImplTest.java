@@ -55,6 +55,7 @@ class ClassServiceImplTest {
 
     private Class clazz;
     private Student student;
+    private User user;
     private ClassDto classDto;
     private SaveClassRequest saveClassRequest;
 
@@ -67,14 +68,16 @@ class ClassServiceImplTest {
         MockitoAnnotations.openMocks(this);
         clazz = new Class();
         clazz.setId(1l);
-        clazz.setCode("code");
         clazz.setDescription("description");
         clazz.setSubject("subject");
         clazz.setStatus("status");
         clazz.setEducationLevel("educationLevel");
         when(classRepository.save(any(Class.class))).thenReturn(clazz);
+        User user = new User();
+        user.setEmail("email");
         student = new Student();
         student.setId(2L);
+        student.setUserEntity(user);
         List<Class> classes = new ArrayList<>();
         classes.add(clazz);
         List<Student> students = new ArrayList<>();

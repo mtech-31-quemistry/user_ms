@@ -17,9 +17,6 @@ public class ClassDto {
 
     private Long id;
 
-    @NotBlank
-    private String code;
-
     private String educationLevel;
 
     private String subject;

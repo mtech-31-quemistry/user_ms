@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClassRepository extends JpaRepository<Class, Long> {
-    Optional<Class> findByCode(String classCode);
 
     @Query("SELECT c FROM Class c JOIN c.tutors t JOIN t.userEntity u WHERE c.id = :classId AND u.accountId = :tutorId")
     Optional<Class> findByClassIdAndTutorAccountId(@Param("classId") Long classId, @Param("tutorId") String tutorAccountId);

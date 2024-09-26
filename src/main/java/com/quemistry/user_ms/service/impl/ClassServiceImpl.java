@@ -19,6 +19,7 @@ import com.quemistry.user_ms.service.ClassService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
@@ -61,7 +62,6 @@ public class ClassServiceImpl implements ClassService {
         var classEntity = new Class();
         var now = OffsetDateTime.now();
         classEntity.setStatus("active");
-        classEntity.setCode(request.getCode());
         classEntity.setDescription(request.getDescription());
         classEntity.setEducationLevel(request.getEducationLevel());
         classEntity.setSubject(request.getSubject());
@@ -89,7 +89,6 @@ public class ClassServiceImpl implements ClassService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("class with id=%s not found", input.getId()));
 
         Class existingClass = classOptional.get();
-        existingClass.setCode(input.getCode());
         existingClass.setDescription(input.getDescription());
         existingClass.setEducationLevel(input.getEducationLevel());
         existingClass.setSubject(input.getSubject());
@@ -129,6 +128,7 @@ public class ClassServiceImpl implements ClassService {
         return classDto;
     }
 
+    @Transactional
     @Override
     public ClassDto removeStudentFromClass(Long classId, Long studentId, String tutorAccountId) {
         Optional<Class> optionalClass = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
@@ -148,6 +148,7 @@ public class ClassServiceImpl implements ClassService {
                 });
         clazz.getStudents().remove(student);
         student.getClasses().remove(clazz);
+        classInvitationRepository.deleteByUserEmailAndClassEntityId(student.getUserEntity().getEmail(), classId);
         studentRepository.save(student);
         classRepository.save(clazz);
         return ClassMapper.INSTANCE.classToClassDto(clazz);
