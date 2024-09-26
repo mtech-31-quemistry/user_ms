@@ -17,7 +17,7 @@ VALUES(9999, 'be2876df-6b26-463f-9f66-54ba5b776011',
 
 INSERT INTO qms_user.tutor
 (id, user_id, education_level, tuition_centre, created_on, created_by, modified_on, modified_by)
-VALUES(9999, 9999, 'J1', 'tuitionCentre', '2024-09-09 21:45:29.689', 'SYSTEM', '2024-09-09 21:45:29.689', 'SYSTEM');
+VALUES(9999, 9999, 'J1', 'tuitionCentre', now(), 'mock', now(), 'mock');
 
 
 

@@ -1,6 +1,6 @@
 spring:
   config:
     activate:
-      on-profile: profile
+      on-profile: prod
 
-FLYWAY_LOCATION: classpath:db/migration
+FLYWAY_LOCATION: classpath:db/migration/prod
