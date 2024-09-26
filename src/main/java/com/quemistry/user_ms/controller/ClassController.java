@@ -102,18 +102,18 @@ public class ClassController extends BaseController {
 
     }
 
-//    @DeleteMapping("/{classId}/student/{studentId}")
-//    public ResponseEntity<ResponseDto> removeStudentClass(
-//            @RequestHeader(value = HEADER_KEY_USER_ID) String tutorAccId,
-//            @PathVariable Long classId,
-//            @PathVariable Long studentId) {
-//        String functionName = "getClassAndInvitations";
-//
-//        ResponseDto responseDto = prepareResponse(
-//                controllerName,
-//                functionName,
-//                "The request has been completed.",
-//                this.classService.removeStudentFromClass(classId, studentId, tutorAccId));
-//        return ResponseEntity.ok(responseDto);
-//    }
+    @DeleteMapping("/{classId}/student/{studentId}")
+    public ResponseEntity<ResponseDto> removeStudentClass(
+            @RequestHeader(value = HEADER_KEY_USER_ID) String tutorAccId,
+            @PathVariable Long classId,
+            @PathVariable Long studentId) {
+        String functionName = "getClassAndInvitations";
+
+        ResponseDto responseDto = prepareResponse(
+                controllerName,
+                functionName,
+                "The request has been completed.",
+                this.classService.removeStudentFromClass(classId, studentId, tutorAccId));
+        return ResponseEntity.ok(responseDto);
+    }
 }

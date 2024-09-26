@@ -147,6 +147,22 @@ class ClassControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void removeStudentClass_shouldReturnOkResponse() throws Exception {
+        // Arrange
+        Long classId = 1L;
+        Long studentId = 2L;
+        String tutorAccId = "tutor123";
+
+        when(classService.removeStudentFromClass(classId, studentId, tutorAccId)).thenReturn(classDto);
+
+        // Act & Assert
+        mockMvc.perform(delete("/v1/class/{classId}/student/{studentId}", classId, studentId)
+                        .header(HEADER_KEY_USER_ID, tutorAccId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
     private ClassResponseDto setClassResponseDtoMock(boolean flag) {
         return new ClassResponseDto(flag);
     }

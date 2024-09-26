@@ -129,29 +129,29 @@ public class ClassServiceImpl implements ClassService {
         return classDto;
     }
 
-//    @Override
-//    public ClassDto removeStudentFromClass(Long classId, Long studentId, String tutorAccountId) {
-//        Optional<Class> optionalClass = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
-//        if (!optionalClass.isPresent()) {
-//            String message = String.format("class not found for classId=%s and tutorAccountId=%s", classId, tutorAccountId);
-//            log.error(message);
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
-//        }
-//        Class clazz = optionalClass.get();
-//        Student student = clazz.getStudents().stream()
-//                .filter( s -> s.getId().equals(studentId))
-//                .findFirst()
-//                .orElseThrow(() -> {
-//                    String message = String.format("student not found for studentId=%s and classId=%s", studentId, classId);
-//                    log.error(message);
-//                    return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
-//                });
-//        clazz.getStudents().remove(student);
-//        student.getClasses().remove(clazz);
-//        studentRepository.save(student);
-//        classRepository.save(clazz);
-//        return ClassMapper.INSTANCE.classToClassDto(clazz);
-//    }
+    @Override
+    public ClassDto removeStudentFromClass(Long classId, Long studentId, String tutorAccountId) {
+        Optional<Class> optionalClass = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
+        if (!optionalClass.isPresent()) {
+            String message = String.format("class not found for classId=%s and tutorAccountId=%s", classId, tutorAccountId);
+            log.error(message);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+        }
+        Class clazz = optionalClass.get();
+        Student student = clazz.getStudents().stream()
+                .filter( s -> s.getId().equals(studentId))
+                .findFirst()
+                .orElseThrow(() -> {
+                    String message = String.format("student not found for studentId=%s and classId=%s", studentId, classId);
+                    log.error(message);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+                });
+        clazz.getStudents().remove(student);
+        student.getClasses().remove(clazz);
+        studentRepository.save(student);
+        classRepository.save(clazz);
+        return ClassMapper.INSTANCE.classToClassDto(clazz);
+    }
 
     public List<Tutor> getTutorsByEmails(List<String> emails) {
         List<Tutor> tutors = new ArrayList<>();

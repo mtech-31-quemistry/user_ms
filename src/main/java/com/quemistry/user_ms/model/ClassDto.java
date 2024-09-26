@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 @Data
@@ -39,7 +40,7 @@ public class ClassDto {
 
     private List<TutorDto> tutors = new ArrayList<>();
 
-    private List<StudentDto> students = new ArrayList<>();
+    private HashSet<StudentDto> students = new HashSet();
 
 
 }

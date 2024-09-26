@@ -5,8 +5,10 @@ import com.quemistry.user_ms.model.SaveClassRequest;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.repository.ClassInvitationRepository;
 import com.quemistry.user_ms.repository.ClassRepository;
+import com.quemistry.user_ms.repository.StudentRepository;
 import com.quemistry.user_ms.repository.TutorRepository;
 import com.quemistry.user_ms.repository.entity.Class;
+import com.quemistry.user_ms.repository.entity.Student;
 import com.quemistry.user_ms.repository.entity.Tutor;
 import com.quemistry.user_ms.repository.entity.User;
 import com.quemistry.user_ms.service.impl.ClassServiceImpl;
@@ -19,6 +21,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,15 +45,17 @@ class ClassServiceImplTest {
     ClassRepository classRepository;
 
     @Mock
+    StudentRepository studentRepository;
+
+    @Mock
     ClassInvitationRepository classInvitationRepository;
 
     @Mock
     TutorRepository tutorRepository;
 
     private Class clazz;
-
+    private Student student;
     private ClassDto classDto;
-
     private SaveClassRequest saveClassRequest;
 
     @BeforeEach
@@ -64,7 +73,14 @@ class ClassServiceImplTest {
         clazz.setStatus("status");
         clazz.setEducationLevel("educationLevel");
         when(classRepository.save(any(Class.class))).thenReturn(clazz);
-
+        student = new Student();
+        student.setId(2L);
+        List<Class> classes = new ArrayList<>();
+        classes.add(clazz);
+        List<Student> students = new ArrayList<>();
+        students.add(student);
+        student.setClasses(classes);
+        clazz.setStudents(students);
     }
 
     @Test
@@ -111,6 +127,47 @@ class ClassServiceImplTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         assertEquals("class with id=1 not found", exception.getReason());
     }
+
+    @Test
+    void removeStudentFromClass_shouldReturnClassDto() {
+        // Arrange
+        when(classRepository.findByClassIdAndTutorAccountId(1L, "tutor123")).thenReturn(Optional.of(clazz));
+        when(studentRepository.save(student)).thenReturn(student);
+        when(classRepository.save(clazz)).thenReturn(clazz);
+
+        // Act
+        ClassDto result = classService.removeStudentFromClass(1L, 2L, "tutor123");
+
+        // Assert
+        verify(classRepository).findByClassIdAndTutorAccountId(1L, "tutor123");
+        verify(studentRepository).save(student);
+        verify(classRepository).save(clazz);
+    }
+
+    @Test
+    public void removeStudentFromClass_shouldThrowNotFound_whenClassNotFound() {
+        String tutorAccountId = "tutor1";
+        Long classId = 1L;
+        Long studentId = 1L;
+
+        when(classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class, () -> classService.removeStudentFromClass(classId, studentId, tutorAccountId)
+                ,"class not found for classId=1 and tutorAccountId=tutor1");
+    }
+
+    @Test
+    public void removeStudentFromClass_shouldThrowNotFound_whenStudentNotFound() {
+        String tutorAccountId = "tutor1";
+        Long classId = 1L;
+        Long studentId = 999L; // Invalid student ID
+
+        when(classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId)).thenReturn(Optional.of(clazz));
+
+        assertThrows(ResponseStatusException.class, () -> classService.removeStudentFromClass(classId, studentId, tutorAccountId)
+                ,"student not found for studentId=999 and classId=1");
+    }
+
 
 
 }
