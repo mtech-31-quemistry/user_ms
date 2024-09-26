@@ -2,7 +2,7 @@ spring:
   application:
     name: user_ms
   profiles:
-    active: ${ENV:prod}
+    active: prod
 
 
   datasource:
