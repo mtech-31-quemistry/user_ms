@@ -1,0 +1,6 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+FLYWAY_LOCATION: classpath:db/migration/dev
