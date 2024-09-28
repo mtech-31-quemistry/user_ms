@@ -4,3 +4,5 @@ spring:
       on-profile: dev
 
 FLYWAY_LOCATION: classpath:db/migration
+DATABASE_CIPHER_KEY: VT9lVmT791GeD3OXyxZv3vsbZ3fBUtrS
+DATABASE_CIPHER_IV: 3b2e1a1e9c1b4b3a

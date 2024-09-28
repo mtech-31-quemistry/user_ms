@@ -10,9 +10,9 @@ DELETE FROM qms_user.user where created_by = 'mock';
 INSERT INTO qms_user."user"
 (id, account_id, email, first_name, last_name, created_on, created_by, modified_on, modified_by)
 VALUES(9999, 'be2876df-6b26-463f-9f66-54ba5b776011',
-       'dXMzciFtaWNyMHNlcnZpYzPQwcLzaBnUPyay5pWA2J+Eg5yXiHpdqagFKjCVk6U=',
-       'dXMzciFtaWNyMHNlcnZpYzPMwNPobjHMLC6kqYGv0osVt/LMh3KocL3D7xLa8mVcxNWxzl7EtQ==',
-       'dXMzciFtaWNyMHNlcnZpYzP21c/xdTfdOiu6am5V3h5XXj0G9FlCl5bLyg==',
+       'M2IyZTFhMWU5YzFiNGIzYc+dGDUgqT+h+a+mem0hs6G7v3eMxkVGndvKftG0Ug==',
+       'M2IyZTFhMWU5YzFiNGIzYe+dGDUgnRSp4rD8V2MhZNDRHCtladfGIrV38SxRsmE=',
+       'M2IyZTFhMWU5YzFiNGIzYe+dGDUgpTOz5I3pdGeMd36xHlke7DIa+P+SfxAA',
        now(), 'mock', now(), 'mock');
 
 INSERT INTO qms_user.tutor
@@ -25,9 +25,9 @@ VALUES(9999, 9999, 'J1', 'tuitionCentre', now(), 'mock', now(), 'mock');
 INSERT INTO qms_user."user"
 (id, account_id, email, first_name, last_name, created_on, created_by, modified_on, modified_by)
 VALUES(8888, '81904eaf-f42d-4bf1-98a4-0bb99df06c2b',
-       'dXMzciFtaWNyMHNlcnZpYzPXwMP4fzfNHiK/oZrB1okZRc2cmifZ3TjmGFwnx6RZxw==',
-       'dXMzciFtaWNyMHNlcnZpYzP3wMP4fzfNGCasu4Kh1IsREKd436Iq+Fmv/vil+62cXA==',
-       'dXMzciFtaWNyMHNlcnZpYzP3wMP4fzfNEi6tvLiO2IPcDZ1dqOot4rQPU90vEDpu',
+       'M2IyZTFhMWU5YzFiNGIzYcicGT43hyaA/aLhdSwvbg49a6euVi94/J7LKoLdBVp2',
+       'M2IyZTFhMWU5YzFiNGIzYeicGT43hyaG+bH7bUwtbAbYjLLTqWI7vsyJUlu6OmD/',
+       'M2IyZTFhMWU5YzFiNGIzYeicGT43hyaM8bD8V2MhZIOPS28oXoJPjUhIMuXvdWA=',
        now(), 'mock', now(), 'mock');
 
 INSERT INTO qms_user.student
@@ -51,4 +51,4 @@ VALUES(9999, 7777, now(), 'mock', now(), 'mock');
 
 INSERT INTO qms_user.class_invitation
 (id, user_email, class_id, status, user_type, code)
-VALUES(7777, 'dXMzciFtaWNyMHNlcnZpYzPXwMP4fzfNHiK/oZrB1okZRc2cmifZ3TjmGFwnx6RZxw==', 7777, 'accepted', 2, 'TGQHPNORA8');
+VALUES(7777, 'M2IyZTFhMWU5YzFiNGIzYcicGT43hyaA/aLhdSwvbg49a6euVi94/J7LKoLdBVp2', 7777, 'accepted', 2, 'TGQHPNORA8');
