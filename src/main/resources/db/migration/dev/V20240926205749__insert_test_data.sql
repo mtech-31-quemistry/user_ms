@@ -37,8 +37,8 @@ VALUES(8888, 8888, 'J1', now(), 'mock', now(), 'mock');
 
 -- CLASS
 INSERT INTO qms_user."class"
-(id, description, subject, education_level, created_on, created_by, modified_on, modified_by, status, start_date, end_date)
-VALUES(7777, 'classDescription', 'Chemistry', 'J1', now(), 'mock', now(), 'mock', 'active',  now(),  now());
+(id, code, description, subject, education_level, created_on, created_by, modified_on, modified_by, status, start_date, end_date)
+VALUES(7777, 'test class', 'classDescription', 'Chemistry', 'J1', now(), 'mock', now(), 'mock', 'active',  now(),  now());
 
 INSERT INTO qms_user.student_class
 (student_id, class_id, status, created_on, created_by, modified_on, modified_by)
@@ -52,4 +52,3 @@ VALUES(9999, 7777, now(), 'mock', now(), 'mock');
 INSERT INTO qms_user.class_invitation
 (id, user_email, class_id, status, user_type, code)
 VALUES(7777, 'dXMzciFtaWNyMHNlcnZpYzPXwMP4fzfNHiK/oZrB1okZRc2cmifZ3TjmGFwnx6RZxw==', 7777, 'accepted', 2, 'TGQHPNORA8');
-
