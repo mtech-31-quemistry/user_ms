@@ -47,7 +47,7 @@ public class Class extends Base {
     private Date endDate;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassInvitation> invitation = new ArrayList<>();
+    private List<ClassInvitation> classInvitations = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -72,7 +72,7 @@ public class Class extends Base {
                 ", description='" + description + '\'' +
                 ", subject='" + subject + '\'' +
                 ", educationLevel='" + educationLevel + '\'' +
-                ", invitation=" + invitation +
+                ", invitation=" + classInvitations +
                 ", tutors=" + tutors.stream().map(Tutor::getUserEntity).map(User::getEmail).toList() +
                 '}';
     }

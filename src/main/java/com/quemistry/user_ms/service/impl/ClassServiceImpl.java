@@ -115,14 +115,10 @@ public class ClassServiceImpl implements ClassService {
     public ClassDto getClassWithInvitations(Long classId, String tutorAccountId) {
         Class clazz = getClassByClassIdAndTutorAccountId(classId, tutorAccountId);
         ClassDto classDto = ClassMapper.INSTANCE.classToClassDto(clazz);
-        List<ClassInvitation> classInvitations = classInvitationRepository.findByClassId(classId);
-        List<ClassInvitationDto> classInvitationDtos = ClassInvitationMapper.INSTANCE.classInvitationsToClassInvitationDto(classInvitations);
-        classDto.setClassInvitations(classInvitationDtos);
         classDto.setTutorEmails(clazz.getTutors().stream().map(Tutor::getUserEntity).map(User::getEmail).collect(Collectors.toList()));
         return classDto;
     }
 
-    @Transactional
     @Override
     public ClassDto removeStudentFromClass(Long classId, Long studentId, String tutorAccountId) {
         Class clazz = getClassByClassIdAndTutorAccountId(classId, tutorAccountId);
@@ -142,12 +138,12 @@ public class ClassServiceImpl implements ClassService {
         return ClassMapper.INSTANCE.classToClassDto(clazz);
     }
 
-    @Transactional
     @Override
     public ClassDto removeStudents(String tutorAccountId, RemoveStudentRequest removeStudentRequest) {
         List<String> emails = removeStudentRequest.getEmails();
         Class clazz = getClassByClassIdAndTutorAccountId(removeStudentRequest.getClassId(), tutorAccountId);
-        classInvitationRepository.deleteByUserEmailInAndClassEntityId(emails, removeStudentRequest.getClassId());
+        int count = classInvitationRepository.deleteByUserEmailInAndClassEntityId(emails, removeStudentRequest.getClassId());
+        log.info("remove students -> deleted invitation count: {}", count);
         List<Student> students = clazz.getStudents().stream()
                 .filter(s -> emails.contains(s.getUserEntity().getEmail()))
                 .collect(Collectors.toList());
