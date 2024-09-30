@@ -1,6 +1,7 @@
 package com.quemistry.user_ms.service;
 
 import com.quemistry.user_ms.model.ClassDto;
+import com.quemistry.user_ms.model.RemoveStudentRequest;
 import com.quemistry.user_ms.model.SaveClassRequest;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 
@@ -17,4 +18,7 @@ public interface ClassService {
     ClassDto getClassWithInvitations(Long classId, String tutorId);
 
     ClassDto removeStudentFromClass(Long classId, Long studentId, String tutorAccountId);
+
+    ClassDto removeStudents(String tutorAccountId, RemoveStudentRequest removeStudentRequest);
+
 }

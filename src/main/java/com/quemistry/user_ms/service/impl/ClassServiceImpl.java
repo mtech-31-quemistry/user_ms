@@ -4,6 +4,7 @@ import com.quemistry.user_ms.mapper.ClassInvitationMapper;
 import com.quemistry.user_ms.mapper.ClassMapper;
 import com.quemistry.user_ms.model.ClassDto;
 import com.quemistry.user_ms.model.ClassInvitationDto;
+import com.quemistry.user_ms.model.RemoveStudentRequest;
 import com.quemistry.user_ms.model.SaveClassRequest;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.repository.ClassInvitationRepository;
@@ -112,14 +113,7 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     public ClassDto getClassWithInvitations(Long classId, String tutorAccountId) {
-//        Optional<Class> classOptional = classRepository.findById(classId);
-        Optional<Class> classOptional = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
-        if (!classOptional.isPresent()) {
-            String message = String.format("class not found for classId=%s and tutorAccountId=%s", classId, tutorAccountId);
-            log.error(message);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
-        }
-        Class clazz = classOptional.get();
+        Class clazz = getClassByClassIdAndTutorAccountId(classId, tutorAccountId);
         ClassDto classDto = ClassMapper.INSTANCE.classToClassDto(clazz);
         List<ClassInvitation> classInvitations = classInvitationRepository.findByClassId(classId);
         List<ClassInvitationDto> classInvitationDtos = ClassInvitationMapper.INSTANCE.classInvitationsToClassInvitationDto(classInvitations);
@@ -131,13 +125,7 @@ public class ClassServiceImpl implements ClassService {
     @Transactional
     @Override
     public ClassDto removeStudentFromClass(Long classId, Long studentId, String tutorAccountId) {
-        Optional<Class> optionalClass = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
-        if (!optionalClass.isPresent()) {
-            String message = String.format("class not found for classId=%s and tutorAccountId=%s", classId, tutorAccountId);
-            log.error(message);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
-        }
-        Class clazz = optionalClass.get();
+        Class clazz = getClassByClassIdAndTutorAccountId(classId, tutorAccountId);
         Student student = clazz.getStudents().stream()
                 .filter( s -> s.getId().equals(studentId))
                 .findFirst()
@@ -154,6 +142,37 @@ public class ClassServiceImpl implements ClassService {
         return ClassMapper.INSTANCE.classToClassDto(clazz);
     }
 
+    @Transactional
+    @Override
+    public ClassDto removeStudents(String tutorAccountId, RemoveStudentRequest removeStudentRequest) {
+        List<String> emails = removeStudentRequest.getEmails();
+        Class clazz = getClassByClassIdAndTutorAccountId(removeStudentRequest.getClassId(), tutorAccountId);
+        classInvitationRepository.deleteByUserEmailInAndClassEntityId(emails, removeStudentRequest.getClassId());
+        List<Student> students = clazz.getStudents().stream()
+                .filter(s -> emails.contains(s.getUserEntity().getEmail()))
+                .collect(Collectors.toList());
+
+        if (!students.isEmpty()){
+            clazz.getStudents().removeAll(students);
+            students.forEach(s -> s.getClasses().remove(clazz));
+            studentRepository.saveAll(students);
+            classRepository.save(clazz);
+        }
+        return ClassMapper.INSTANCE.classToClassDto(clazz);
+    }
+
+
+    private Class getClassByClassIdAndTutorAccountId(Long classId, String tutorAccountId) {
+        Optional<Class> optionalClass = classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId);
+        if (!optionalClass.isPresent()) {
+            String message = String.format("class not found for classId=%s and tutorAccountId=%s", classId, tutorAccountId);
+            log.error(message);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+        }
+        return optionalClass.get();
+    }
+
+
     public List<Tutor> getTutorsByEmails(List<String> emails) {
         List<Tutor> tutors = new ArrayList<>();
         for (String email : emails) {
@@ -165,6 +184,5 @@ public class ClassServiceImpl implements ClassService {
         }
         return tutors;
     }
-
 
 }

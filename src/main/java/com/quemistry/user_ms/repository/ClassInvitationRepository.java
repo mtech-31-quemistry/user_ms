@@ -18,4 +18,7 @@ public interface ClassInvitationRepository extends JpaRepository<ClassInvitation
     // Method to delete by user email and class ID
     @Modifying
     void deleteByUserEmailAndClassEntityId(String userEmail, Long classId);
+
+    @Modifying
+    void deleteByUserEmailInAndClassEntityId(List<String> userEmails, Long classId);
 }

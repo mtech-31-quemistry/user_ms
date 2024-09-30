@@ -2,6 +2,7 @@ package com.quemistry.user_ms.controller;
 
 import com.quemistry.user_ms.controller.base.BaseController;
 import com.quemistry.user_ms.model.ClassDto;
+import com.quemistry.user_ms.model.RemoveStudentRequest;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.service.ClassService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,19 +14,29 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.quemistry.user_ms.constant.UserConstant.HEADER_KEY_USER_ID;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ClassController.class)
 @Import(ControllerAdvice.class)
@@ -40,13 +51,17 @@ class ClassControllerTest {
     @Mock
     private ClassDto classDto;
 
+    private ObjectMapper objectMapper;
+    private String tutorAccountId;
+
     @BeforeEach
     void init() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new ClassController(classService))
                 .setControllerAdvice(new BaseController())
                 .build();
-
+        objectMapper = new ObjectMapper();
+        tutorAccountId = "tutor-account-id";
     }
 
     @DisplayName("Should return status 200 when try to save class")
@@ -58,8 +73,8 @@ class ClassControllerTest {
         when(classService.saveClass(any())).thenReturn(setClassResponseDtoMock(true));
 
         mockMvc.perform(post("/v1/class")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-User-ID", HEADER_KEY_USER_ID)
+                        .contentType(APPLICATION_JSON)
+                        .header(HEADER_KEY_USER_ID, tutorAccountId)
                         .content("""
                                 {
                                     "code": "C001",
@@ -68,7 +83,7 @@ class ClassControllerTest {
                                     "educationLevel": "level 1"
                                 }"""))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
                 .andExpect(jsonPath("$.statusCode").value(expectedStatusCode))
                 .andExpect(jsonPath("$.payload.success").value(expectedSuccessFlag));
 
@@ -84,8 +99,8 @@ class ClassControllerTest {
         when(classService.updateClass(any())).thenReturn(classDto);
 
         mockMvc.perform(put("/v1/class")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-User-ID", HEADER_KEY_USER_ID)
+                        .contentType(APPLICATION_JSON)
+                        .header(HEADER_KEY_USER_ID, tutorAccountId)
                         .content("""
                                 {
                                      "id": 2,
@@ -95,7 +110,7 @@ class ClassControllerTest {
                                      "educationLevel": "level 3"
                                  }"""))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
                 .andExpect(jsonPath("$.statusCode").value(expectedStatusCode));
 
         verify(classService, times(1)).updateClass(any());
@@ -104,13 +119,12 @@ class ClassControllerTest {
     @Test
     void givenValidClassId_whenGetClassAndInvitations_thenReturnsResponseDto() throws Exception {
         Long classId = 1L;
-        String userId = "user123";
-        when(classService.getClassWithInvitations(classId, userId)).thenReturn(new ClassDto());
+        when(classService.getClassWithInvitations(classId, tutorAccountId)).thenReturn(new ClassDto());
 
         // Perform the GET request and verify the response
         mockMvc.perform(get("/v1/class/{classId}", classId)
-                        .header("x-user-id", userId)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .header(HEADER_KEY_USER_ID, tutorAccountId)
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.statusMessage").value("The request has been completed."));
         // Add more expectations based on the properties of your ResponseDto
@@ -120,15 +134,14 @@ class ClassControllerTest {
     @Test
     void givenInvalidClassId_whenGetClassAndInvitations_thenReturnsException() throws Exception {
         Long classId = 1L;
-        String userId = "user123";
 
         // Mock the service to throw an exception
-        when(classService.getClassWithInvitations(classId, userId)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
+        when(classService.getClassWithInvitations(classId, tutorAccountId)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
 
         // Perform the GET request and verify the exception handling
         mockMvc.perform(get("/v1/class/{classId}", classId)
-                        .header("x-user-id", userId)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .header(HEADER_KEY_USER_ID, tutorAccountId)
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
@@ -142,8 +155,8 @@ class ClassControllerTest {
 
         // Perform the GET request and verify the exception handling
         mockMvc.perform(get("/v1/class")
-                        .header("x-user-id", "userId")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .header(HEADER_KEY_USER_ID, tutorAccountId)
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -152,15 +165,32 @@ class ClassControllerTest {
         // Arrange
         Long classId = 1L;
         Long studentId = 2L;
-        String tutorAccId = "tutor123";
 
-        when(classService.removeStudentFromClass(classId, studentId, tutorAccId)).thenReturn(classDto);
+        when(classService.removeStudentFromClass(classId, studentId, tutorAccountId)).thenReturn(classDto);
 
         // Act & Assert
         mockMvc.perform(delete("/v1/class/{classId}/student/{studentId}", classId, studentId)
-                        .header(HEADER_KEY_USER_ID, tutorAccId)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .header(HEADER_KEY_USER_ID, tutorAccountId)
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void removeStudents_ShouldReturnOk_WhenSuccessful() throws Exception {
+        // Arrange
+        RemoveStudentRequest removeStudentRequest = new RemoveStudentRequest();// Populate with necessary fields
+        // Mock the service method to return expected results
+        when(classService.removeStudents(eq(tutorAccountId), any(RemoveStudentRequest.class))).thenReturn(classDto);
+
+        // Act & Assert
+        mockMvc.perform(post("/v1/class/remove-student")
+                        .header(HEADER_KEY_USER_ID, tutorAccountId) // Replace with actual header name
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(removeStudentRequest))) // Replace with actual JSON
+                .andExpect(status().isOk()); // Adjust the expected response as needed
+
+        // Verify that the service method was called
+        verify(classService, times(1)).removeStudents(eq(tutorAccountId), any(RemoveStudentRequest.class));
     }
 
     private ClassResponseDto setClassResponseDtoMock(boolean flag) {

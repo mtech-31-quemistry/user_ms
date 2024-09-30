@@ -1,6 +1,7 @@
 package com.quemistry.user_ms.service;
 
 import com.quemistry.user_ms.model.ClassDto;
+import com.quemistry.user_ms.model.RemoveStudentRequest;
 import com.quemistry.user_ms.model.SaveClassRequest;
 import com.quemistry.user_ms.model.response.ClassResponseDto;
 import com.quemistry.user_ms.repository.ClassInvitationRepository;
@@ -12,7 +13,6 @@ import com.quemistry.user_ms.repository.entity.Student;
 import com.quemistry.user_ms.repository.entity.Tutor;
 import com.quemistry.user_ms.repository.entity.User;
 import com.quemistry.user_ms.service.impl.ClassServiceImpl;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,16 +23,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -74,7 +76,7 @@ class ClassServiceImplTest {
         clazz.setEducationLevel("educationLevel");
         when(classRepository.save(any(Class.class))).thenReturn(clazz);
         User user = new User();
-        user.setEmail("email");
+        user.setEmail("student1@mail.com");
         student = new Student();
         student.setId(2L);
         student.setUserEntity(user);
@@ -114,7 +116,7 @@ class ClassServiceImplTest {
     @Test
     void givenClass_AbleToUpdateClass() {
         when(classRepository.findById(anyLong())).thenReturn(Optional.of(clazz));
-        Assertions.assertNotNull(classService.updateClass(classDto));
+        assertNotNull(classService.updateClass(classDto));
     }
 
     @Test
@@ -148,7 +150,7 @@ class ClassServiceImplTest {
     }
 
     @Test
-    public void removeStudentFromClass_shouldThrowNotFound_whenClassNotFound() {
+    void removeStudentFromClass_shouldThrowNotFound_whenClassNotFound() {
         String tutorAccountId = "tutor1";
         Long classId = 1L;
         Long studentId = 1L;
@@ -160,7 +162,7 @@ class ClassServiceImplTest {
     }
 
     @Test
-    public void removeStudentFromClass_shouldThrowNotFound_whenStudentNotFound() {
+    void removeStudentFromClass_shouldThrowNotFound_whenStudentNotFound() {
         String tutorAccountId = "tutor1";
         Long classId = 1L;
         Long studentId = 999L; // Invalid student ID
@@ -171,6 +173,57 @@ class ClassServiceImplTest {
                 ,"student not found for studentId=999 and classId=1");
     }
 
+    @Test
+    void removeStudents_ShouldRemoveStudents_WhenEmailsMatch() {
+        // Arrange
+        String tutorAccountId = "tutor123";
+        RemoveStudentRequest removeStudentRequest = new RemoveStudentRequest();
+        removeStudentRequest.setClassId(1L);
+        removeStudentRequest.setEmails(Arrays.asList("student1@mail.com"));
 
+        // Mocking repository methods
+        when(classRepository.findByClassIdAndTutorAccountId(1L, "tutor123")).thenReturn(Optional.of(clazz));
+        when(classRepository.findById(any())).thenReturn(Optional.of(clazz)); // Adjust as needed
+        when(studentRepository.saveAll(anyList())).thenReturn(Arrays.asList(student));
+
+        // Act
+        ClassDto result = classService.removeStudents(tutorAccountId, removeStudentRequest);
+
+        // Assert
+        assertNotNull(result);
+        verify(classInvitationRepository, times(1)).deleteByUserEmailInAndClassEntityId(
+                removeStudentRequest.getEmails(),
+                removeStudentRequest.getClassId()
+        );
+        verify(studentRepository, times(1)).saveAll(anyList());
+        verify(classRepository, times(1)).save(clazz);
+        assertFalse(clazz.getStudents().contains(student));
+    }
+
+    @Test
+    void removeStudents_ShouldNotRemoveStudents_WhenNoMatchingEmails() {
+        // Arrange
+        String tutorAccountId = "tutor123";
+        RemoveStudentRequest removeStudentRequest = new RemoveStudentRequest();
+        removeStudentRequest.setClassId(1L);
+        removeStudentRequest.setEmails(Arrays.asList("nonexistent@example.com"));
+
+        // Mocking repository methods
+        when(classRepository.findByClassIdAndTutorAccountId(1L, "tutor123")).thenReturn(Optional.of(clazz));
+        when(classRepository.findById(any())).thenReturn(Optional.of(clazz)); // Adjust as needed
+
+        // Act
+        ClassDto result = classService.removeStudents(tutorAccountId, removeStudentRequest);
+
+        // Assert
+        assertNotNull(result);
+        verify(classInvitationRepository, times(1)).deleteByUserEmailInAndClassEntityId(
+                removeStudentRequest.getEmails(),
+                removeStudentRequest.getClassId()
+        );
+        verify(studentRepository, times(0)).saveAll(anyList());
+        verify(classRepository, times(0)).save(clazz);
+        assertTrue(clazz.getStudents().contains(student)); // Ensure the student is still present
+    }
 
 }

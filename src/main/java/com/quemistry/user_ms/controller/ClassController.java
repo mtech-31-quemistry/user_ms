@@ -2,6 +2,7 @@ package com.quemistry.user_ms.controller;
 
 import com.quemistry.user_ms.controller.base.BaseController;
 import com.quemistry.user_ms.model.ClassDto;
+import com.quemistry.user_ms.model.RemoveStudentRequest;
 import com.quemistry.user_ms.model.SaveClassRequest;
 import com.quemistry.user_ms.model.base.ResponseDto;
 import com.quemistry.user_ms.service.ClassService;
@@ -27,6 +28,7 @@ public class ClassController extends BaseController {
 
     private final ClassService classService;
     private final String controllerName = "ClassController";
+    private final String statusMessage = "The request has been completed.";
 
     public ClassController(ClassService classService) {
         this.classService = classService;
@@ -45,7 +47,7 @@ public class ClassController extends BaseController {
             ResponseDto responseDto = prepareResponse(
                     controllerName,
                     functionName,
-                    "The request has been completed.",
+                    statusMessage,
                     this.classService.saveClass(request)
             );
 
@@ -67,7 +69,7 @@ public class ClassController extends BaseController {
         ResponseDto responseDto = prepareResponse(
                 controllerName,
                 functionName,
-                "The request has been completed.",
+                statusMessage,
                 classDto
         );
         return ResponseEntity.ok(responseDto);
@@ -81,7 +83,7 @@ public class ClassController extends BaseController {
         ResponseDto responseDto = prepareResponse(
                 controllerName,
                 functionName,
-                "The request has been completed.",
+                statusMessage,
                 this.classService.getAllClasses(userId)
         );
         return ResponseEntity.ok(responseDto);
@@ -95,7 +97,7 @@ public class ClassController extends BaseController {
         ResponseDto responseDto = prepareResponse(
                 controllerName,
                 functionName,
-                "The request has been completed.",
+                statusMessage,
                 this.classService.getClassWithInvitations(classId, tutorId));
 
         return ResponseEntity.ok(responseDto);
@@ -107,13 +109,27 @@ public class ClassController extends BaseController {
             @RequestHeader(value = HEADER_KEY_USER_ID) String tutorAccId,
             @PathVariable Long classId,
             @PathVariable Long studentId) {
-        String functionName = "getClassAndInvitations";
+        String functionName = "remove student by student id";
 
         ResponseDto responseDto = prepareResponse(
                 controllerName,
                 functionName,
-                "The request has been completed.",
+                statusMessage,
                 this.classService.removeStudentFromClass(classId, studentId, tutorAccId));
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/remove-student")
+    public ResponseEntity<ResponseDto> removeStudents(
+            @RequestHeader(value = HEADER_KEY_USER_ID) String tutorAccId,
+            @RequestBody RemoveStudentRequest removeStudentRequest) {
+        String functionName = "remove students";
+
+        ResponseDto responseDto = prepareResponse(
+                controllerName,
+                functionName,
+                statusMessage,
+                this.classService.removeStudents(tutorAccId, removeStudentRequest));
         return ResponseEntity.ok(responseDto);
     }
 }
