@@ -22,21 +22,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class ClassServiceImplTest {
 
@@ -57,19 +49,16 @@ class ClassServiceImplTest {
 
     private Class clazz;
     private Student student;
-    private User user;
     private ClassDto classDto;
-    private SaveClassRequest saveClassRequest;
 
     @BeforeEach
     void setUp() {
 //        classDto = new ClassDto(1L, "test", "test", "test sub", "test", "tst", null, Collections.emptyList());
         classDto = new ClassDto();
         classDto.setId(1L);
-        saveClassRequest = new SaveClassRequest();
         MockitoAnnotations.openMocks(this);
         clazz = new Class();
-        clazz.setId(1l);
+        clazz.setId(1L);
         clazz.setDescription("description");
         clazz.setSubject("subject");
         clazz.setStatus("status");
@@ -93,7 +82,6 @@ class ClassServiceImplTest {
         // Given
         SaveClassRequest request = new SaveClassRequest();
         request.setUserId("testUserId");
-        request.setCode("classId");
         request.setDescription("classDescription");
         request.setEducationLevel("level");
         request.setSubject("subject");
@@ -125,9 +113,7 @@ class ClassServiceImplTest {
         when(classRepository.findById(classDto.getId())).thenReturn(Optional.empty());
 
         // Expect a ResponseStatusException with a NOT_FOUND status
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            classService.updateClass(classDto);
-        });
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> classService.updateClass(classDto));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         assertEquals("class with id=1 not found", exception.getReason());
@@ -142,6 +128,8 @@ class ClassServiceImplTest {
 
         // Act
         ClassDto result = classService.removeStudentFromClass(1L, 2L, "tutor123");
+
+        assertNotNull(result);
 
         // Assert
         verify(classRepository).findByClassIdAndTutorAccountId(1L, "tutor123");
@@ -158,7 +146,7 @@ class ClassServiceImplTest {
         when(classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId)).thenReturn(Optional.empty());
 
         assertThrows(ResponseStatusException.class, () -> classService.removeStudentFromClass(classId, studentId, tutorAccountId)
-                ,"class not found for classId=1 and tutorAccountId=tutor1");
+                , "class not found for classId=1 and tutorAccountId=tutor1");
     }
 
     @Test
@@ -170,7 +158,7 @@ class ClassServiceImplTest {
         when(classRepository.findByClassIdAndTutorAccountId(classId, tutorAccountId)).thenReturn(Optional.of(clazz));
 
         assertThrows(ResponseStatusException.class, () -> classService.removeStudentFromClass(classId, studentId, tutorAccountId)
-                ,"student not found for studentId=999 and classId=1");
+                , "student not found for studentId=999 and classId=1");
     }
 
     @Test
@@ -179,12 +167,12 @@ class ClassServiceImplTest {
         String tutorAccountId = "tutor123";
         RemoveStudentRequest removeStudentRequest = new RemoveStudentRequest();
         removeStudentRequest.setClassId(1L);
-        removeStudentRequest.setEmails(Arrays.asList("student1@mail.com"));
+        removeStudentRequest.setEmails(List.of("student1@mail.com"));
 
         // Mocking repository methods
         when(classRepository.findByClassIdAndTutorAccountId(1L, "tutor123")).thenReturn(Optional.of(clazz));
         when(classRepository.findById(any())).thenReturn(Optional.of(clazz)); // Adjust as needed
-        when(studentRepository.saveAll(anyList())).thenReturn(Arrays.asList(student));
+        when(studentRepository.saveAll(anyList())).thenReturn(Collections.singletonList(student));
 
         // Act
         ClassDto result = classService.removeStudents(tutorAccountId, removeStudentRequest);
@@ -206,7 +194,7 @@ class ClassServiceImplTest {
         String tutorAccountId = "tutor123";
         RemoveStudentRequest removeStudentRequest = new RemoveStudentRequest();
         removeStudentRequest.setClassId(1L);
-        removeStudentRequest.setEmails(Arrays.asList("nonexistent@example.com"));
+        removeStudentRequest.setEmails(List.of("nonexistent@example.com"));
 
         // Mocking repository methods
         when(classRepository.findByClassIdAndTutorAccountId(1L, "tutor123")).thenReturn(Optional.of(clazz));
